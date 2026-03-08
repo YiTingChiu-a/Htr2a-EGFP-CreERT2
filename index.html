@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NeuroAtlas — Htr2a GFP Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07090c;--surf:#0c0f15;--surf2:#12161e;--bdr:#1a1f2c;--bdr2:#222a3a;--txt:#dde2ec;--txt2:#6b7794;--txt3:#323d55;--grn:#3ecf8e;--grn2:#1a7a52;--gfp:#39e55e;--locked:#bf4567;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(62,207,142,.05),transparent);pointer-events:none;z-index:0;}
+
+/* LOGIN */
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:200;}
+.lcard{background:var(--surf);border:1px solid var(--bdr2);border-radius:20px;padding:48px 50px;width:400px;position:relative;overflow:hidden;}
+.lcard::after{content:'';position:absolute;bottom:-60px;left:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(62,207,142,.08),transparent 70%);pointer-events:none;}
+.lbrand{font-size:24px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:9px;margin-bottom:4px;}
+.lpulse{width:7px;height:7px;background:var(--grn);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.5)}}
+.lsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.lline{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gfp);margin-bottom:26px;}
+.llbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px;}
+.lsel,.linp{width:100%;background:var(--bg);border:1px solid var(--bdr2);border-radius:9px;padding:10px 14px;color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;margin-bottom:14px;transition:border-color .2s;}
+.lsel:focus,.linp:focus{border-color:var(--grn);}
+.lbtn{width:100%;background:var(--grn);color:#07090c;border:none;border-radius:9px;padding:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;}
+.lbtn:hover{background:#50dba0;transform:translateY(-1px);}
+.lerr{color:var(--locked);font-size:11px;font-family:'JetBrains Mono',monospace;margin-bottom:10px;display:none;}
+.lhint{margin-top:16px;background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:11px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);line-height:2;}
+.lhint b{color:var(--grn);}
+
+/* APP */
+#app{display:none;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:230px;background:var(--surf);border-right:1px solid var(--bdr);padding:20px 0;z-index:10;display:flex;flex-direction:column;overflow-y:auto;}
+.sb-logo{padding:0 18px 18px;border-bottom:1px solid var(--bdr);margin-bottom:14px;}
+.sb-brand{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.sb-line{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--gfp);margin-top:4px;}
+.sb-role{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);margin-top:2px;}
+.sb-sec{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);letter-spacing:.13em;text-transform:uppercase;padding:0 18px;margin:12px 0 5px;}
+.sbi{display:flex;align-items:center;gap:8px;padding:7px 10px;margin:0 7px 1px;border-radius:8px;cursor:pointer;font-size:12px;color:var(--txt2);transition:all .15s;font-weight:500;}
+.sbi:hover{background:var(--surf2);color:var(--txt);}
+.sbi.on{background:rgba(62,207,142,.1);color:var(--grn);}
+.sb-sp{flex:1;}.sb-div{height:1px;background:var(--bdr);margin:10px 14px;}
+.main{margin-left:230px;padding:26px 30px;min-height:100vh;}
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.ptitle{font-size:22px;font-weight:700;letter-spacing:-.02em;}
+.ptitle em{color:var(--gfp);font-style:normal;}
+.uchip{display:flex;align-items:center;gap:7px;background:var(--surf);border:1px solid var(--bdr2);border-radius:100px;padding:5px 12px 5px 6px;font-size:11px;font-weight:500;margin-left:auto;}
+.uav{width:24px;height:24px;background:var(--grn2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;}
+.lobtn{background:transparent;border:1px solid var(--bdr2);border-radius:8px;padding:5px 11px;color:var(--txt2);font-size:11px;cursor:pointer;font-family:'Syne',sans-serif;transition:all .15s;}
+.lobtn:hover{border-color:var(--locked);color:var(--locked);}
+.stats-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.stat{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:12px 16px;}
+.stat-n{font-size:20px;font-weight:700;letter-spacing:-.02em;}
+.stat-l{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-top:2px;}
+.panel{background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;overflow:hidden;}
+.panel-hdr{padding:15px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.panel-title{font-size:14px;font-weight:700;}
+.panel-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:2px;}
+.panel-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;background:rgba(62,207,142,.08);border:1px solid rgba(62,207,142,.15);border-radius:6px;padding:4px 10px;color:var(--grn);}
+.bax{display:flex;align-items:center;padding:14px 20px 0;}
+.bax-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);}
+.bax-bar{flex:1;height:3px;background:linear-gradient(90deg,#5b8dee,#3ecf8e);border-radius:2px;margin:0 10px;position:relative;}
+.bax-bar::before{content:'◀ Rostral';position:absolute;left:0;top:-12px;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt3);}
+.bax-bar::after{content:'Caudal ▶';position:absolute;right:0;top:-12px;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt3);}
+.sec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:14px 20px 20px;}
+.sec-card{background:var(--surf2);border:1px solid var(--bdr2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;}
+.sec-card:hover{border-color:var(--gfp);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.5);}
+.sec-card:hover .sec-overlay{opacity:1;}
+.sec-img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#000;}
+.sec-overlay{position:absolute;inset:0;background:rgba(57,229,94,.1);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
+.sec-footer{padding:6px 9px;display:flex;align-items:center;justify-content:space-between;}
+.sec-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt2);}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);}
+.sec-dot{width:7px;height:7px;border-radius:50%;background:var(--gfp);margin-top:3px;}
+
+/* MODAL */
+#viewer-modal{position:fixed;inset:0;z-index:100;background:rgba(4,6,10,.92);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;}
+#viewer-modal.open{display:flex;}
+.vm-box{background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;width:min(1140px,96vw);max-height:94vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.8);animation:vmIn .22s cubic-bezier(.34,1.2,.64,1);}
+@keyframes vmIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+.vm-hdr{padding:13px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.vm-title{font-size:13px;font-weight:700;}
+.vm-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:2px;}
+.vm-nav{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;}
+.vm-navbtn{width:30px;height:30px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--txt2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.vm-navbtn:hover{border-color:var(--gfp);color:var(--gfp);}
+.vm-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gfp);background:rgba(57,229,94,.08);border:1px solid rgba(57,229,94,.15);border-radius:6px;padding:4px 10px;}
+.vm-close{width:30px;height:30px;background:rgba(191,69,103,.1);border:1px solid rgba(191,69,103,.25);border-radius:8px;color:var(--locked);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-left:4px;}
+.vm-close:hover{background:rgba(191,69,103,.2);}
+.vm-body{display:flex;flex:1;overflow:hidden;min-height:0;}
+
+/* Stage */
+.vm-stage-wrap{flex:1;background:#000;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.vm-stage-wrap.grab{cursor:grab;}
+.vm-stage-wrap.grabbing{cursor:grabbing;}
+.vm-canvas-container{position:absolute;}
+.vm-canvas{position:absolute;top:0;left:0;}
+.vm-chl{position:absolute;top:10px;left:10px;font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 10px;border-radius:4px;border:1px solid rgba(57,229,94,.3);background:rgba(57,229,94,.07);color:var(--gfp);z-index:5;pointer-events:none;}
+.vm-coords{position:absolute;bottom:10px;left:12px;font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(62,207,142,.5);z-index:5;pointer-events:none;}
+.vm-scalebar{position:absolute;top:12px;right:12px;z-index:5;text-align:right;pointer-events:none;}
+.vm-sbline{height:2px;background:rgba(255,255,255,.35);width:50px;margin-left:auto;}
+.vm-sbtxt{font-size:7px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.35);margin-top:2px;}
+.vm-zoom-ctrl{position:absolute;bottom:10px;right:12px;display:flex;flex-direction:column;gap:4px;z-index:10;}
+.vm-zbtn{width:28px;height:28px;background:rgba(12,15,21,.88);border:1px solid var(--bdr2);border-radius:7px;color:var(--txt2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;backdrop-filter:blur(4px);}
+.vm-zbtn:hover{border-color:var(--gfp);color:var(--gfp);}
+.vm-zlvl{font-size:8px;font-family:'JetBrains Mono',monospace;color:var(--txt3);text-align:center;}
+
+/* Loading spinner overlay on stage */
+.vm-loading{position:absolute;inset:0;background:rgba(7,9,12,.7);display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:15;}
+.vm-loading.show{display:flex;}
+.vm-spin{width:28px;height:28px;border:3px solid var(--bdr2);border-top-color:var(--gfp);border-radius:50%;animation:spin .7s linear infinite;}
+.vm-load-msg{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gfp);}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.dl-overlay{position:absolute;inset:0;background:rgba(7,9,12,.82);display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:20;}
+.dl-overlay.show{display:flex;}
+.dl-spin{width:26px;height:26px;border:3px solid var(--bdr2);border-top-color:var(--gfp);border-radius:50%;animation:spin .7s linear infinite;}
+.dl-msg{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gfp);}
+
+/* Right panel */
+.vm-right{width:220px;flex-shrink:0;border-left:1px solid var(--bdr);display:flex;flex-direction:column;overflow-y:auto;}
+.vm-right::-webkit-scrollbar{width:3px;}.vm-right::-webkit-scrollbar-thumb{background:var(--bdr2);}
+.cp-sec{padding:11px 13px;border-bottom:1px solid var(--bdr);}
+.cp-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;}
+.master-bd{background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:9px 11px;margin-bottom:4px;}
+.bd-range{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:linear-gradient(90deg,#000,#555 40%,#fff);outline:none;cursor:pointer;}
+.bd-range::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--gfp);border:2px solid var(--bg);cursor:pointer;}
+.bd-labels{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);margin-top:3px;}
+.bdrow{margin-bottom:5px;}
+.bdlabel{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);display:flex;justify-content:space-between;margin-bottom:2px;}
+.bdslider{width:100%;-webkit-appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer;accent-color:var(--gfp);}
+.dl-bar{display:flex;flex-direction:column;gap:5px;}
+.dlbtn{background:rgba(57,229,94,.07);border:1px solid rgba(57,229,94,.2);border-radius:7px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gfp);cursor:pointer;text-align:left;transition:all .15s;}
+.dlbtn:hover{background:rgba(57,229,94,.15);}
+.sec-infobox{padding:10px 13px;border-top:1px solid var(--bdr);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt2);line-height:1.9;margin-top:auto;}
+.sec-infobox b{color:var(--txt);}
+.linkbox{background:rgba(62,207,142,.04);border:1px solid rgba(62,207,142,.12);border-radius:9px;padding:11px 13px;}
+.linktitle{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--grn);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.linkrow{display:flex;gap:6px;}
+.linkinp{flex:1;background:var(--bg);border:1px solid var(--bdr2);border-radius:6px;padding:6px 9px;color:var(--txt2);font-family:'JetBrains Mono',monospace;font-size:8px;outline:none;}
+.copybtn{background:var(--grn);color:#07090c;border:none;border-radius:6px;padding:6px 11px;font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.copybtn:hover{background:#50dba0;}.copybtn.copied{background:var(--grn2);color:rgba(255,255,255,.7);}
+.linkhint{margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);}
+
+/* Thumbnail strip */
+.vm-strip-wrap{padding:8px 14px;border-top:1px solid var(--bdr);flex-shrink:0;}
+.vm-strip-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.vm-strip{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;}
+.vm-strip::-webkit-scrollbar{height:3px;}.vm-strip::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px;}
+.vm-thumb{flex-shrink:0;width:52px;cursor:pointer;border-radius:5px;overflow:hidden;border:2px solid var(--bdr);transition:all .15s;background:#000;}
+.vm-thumb:hover{border-color:var(--txt3);}.vm-thumb.on{border-color:var(--gfp);}
+.vm-thumb img{width:52px;height:37px;object-fit:contain;display:block;background:#000;opacity:.75;transition:opacity .15s;}
+.vm-thumb.on img,.vm-thumb:hover img{opacity:1;}
+.vm-thumb-lbl{font-size:6px;font-family:'JetBrains Mono',monospace;color:var(--txt3);text-align:center;padding:2px;background:var(--bg);}
+.vm-thumb.on .vm-thumb-lbl{color:var(--gfp);}
+
+/* Info panel */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.info-cell{background:var(--bg);border:1px solid var(--bdr);border-radius:9px;padding:11px 13px;}
+.info-cell.wide{grid-column:1/-1;}
+.ic-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:4px;}
+.ic-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt);line-height:1.6;}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surf);border:1px solid var(--gfp);border-radius:9px;padding:9px 15px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--gfp);z-index:999;display:none;}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
+@media(max-width:700px){.vm-right{display:none}.main{margin-left:0;padding:14px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lcard">
+    <div class="lbrand"><span class="lpulse"></span>NeuroAtlas</div>
+    <div class="lsub">Whole Brain Mapping Platform</div>
+    <div class="lline">Htr2aEGFP-CT-IRES-CreERT2 · TAMII-1 · GFP channel · Full resolution</div>
+    <div class="llbl">Role</div>
+    <select class="lsel" id="rsel">
+      <option value="">— Select role —</option>
+      <option value="owner">🔬 Principal Investigator</option>
+      <option value="user">🤝 Collaborator / Reader</option>
+    </select>
+    <div class="llbl">Password</div>
+    <input class="linp" type="password" id="pin" placeholder="Enter password…"/>
+    <div class="lerr" id="lerr">✗ Incorrect password</div>
+    <button class="lbtn" onclick="tryLogin()">Access Atlas →</button>
+    <div class="lhint"><b>owner123</b> → Principal Investigator<br><b>user456</b> &nbsp;→ Collaborator / Reader</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-brand"><span class="lpulse"></span>NeuroAtlas</div>
+      <div class="sb-line">Htr2a-EGFP-CT-IRES-CreERT2</div>
+      <div class="sb-role" id="sbrole">—</div>
+    </div>
+    <div class="sb-sec">Atlas</div>
+    <div class="sbi on" id="nav-atlas" onclick="navTo('atlas',this)">🧠 &nbsp;Whole Brain Map</div>
+    <div class="sbi" id="nav-info" onclick="navTo('info',this)">📋 &nbsp;Mouse Line Info</div>
+    <div class="sb-div"></div>
+    <div class="sb-sec">Channel</div>
+    <div class="sbi" style="pointer-events:none;font-size:11px">
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--gfp);display:inline-block;flex-shrink:0"></span>
+      &nbsp;GFP · 5-HT2A-EGFP-CT
+    </div>
+    <div class="sb-sp"></div><div class="sb-div"></div>
+    <div class="sbi" onclick="logout()" style="color:var(--txt3);font-size:12px">⏻ &nbsp;Sign Out</div>
+  </nav>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="ptitle">Htr2a · <em>5-HT2A-EGFP-CT</em></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:3px">
+          2ACxAi9 TAMII-1 · 31 coronal sections · GFP channel · Full resolution · Rostral→Caudal
+        </div>
+      </div>
+      <div class="uchip"><div class="uav" id="uav">?</div><span id="uname">—</span></div>
+      <button class="lobtn" onclick="logout()">Sign Out</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n" style="color:var(--gfp)">31</div><div class="stat-l">Sections</div></div>
+      <div class="stat"><div class="stat-n" style="color:var(--gfp)">GFP</div><div class="stat-l">Channel</div></div>
+      <div class="stat"><div class="stat-n">1</div><div class="stat-l">Mouse</div></div>
+      <div class="stat"><div class="stat-n" style="color:var(--grn)">Full res</div><div class="stat-l">VS120 export</div></div>
+      <div class="stat"><div class="stat-n">VS120</div><div class="stat-l">Scanner</div></div>
+    </div>
+
+    <div class="panel" id="panel-atlas">
+      <div class="panel-hdr">
+        <div>
+          <div class="panel-title">Whole Brain Coronal Series — GFP Channel</div>
+          <div class="panel-sub">Click any section to open viewer · ◀ ▶ keys to navigate · Scroll wheel to zoom</div>
+        </div>
+        <div class="panel-badge">31 sections · 5-HT2A-EGFP-CT · Rostral→Caudal</div>
+      </div>
+      <div class="bax"><span class="bax-lbl">Rostral</span><div class="bax-bar"></div><span class="bax-lbl">Caudal</span></div>
+      <div class="sec-grid" id="sec-grid"></div>
+    </div>
+
+    <div class="panel" id="panel-info" style="display:none">
+      <div class="panel-hdr">
+        <div>
+          <div class="panel-title">Mouse Line Information</div>
+          <div class="panel-sub">Htr2a-EGFP-CT-IRES-CreERT2</div>
+        </div>
+      </div>
+      <div style="padding:18px 20px">
+        <div style="background:rgba(57,229,94,.05);border:1px solid rgba(57,229,94,.12);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;gap:12px;">
+          <div style="font-size:22px;flex-shrink:0">🧬</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:4px">Htr2a-EGFP-CT-IRES-CreERT2</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);line-height:1.8">
+              5-HT2A receptor C-terminal EGFP knock-in · Tamoxifen-inducible CreERT2 · GFP channel
+            </div>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-cell"><div class="ic-lbl">Mouse Line</div><div class="ic-val">Htr2aEGFP-CT-IRES-CreERT2</div></div>
+          <div class="info-cell"><div class="ic-lbl">Sample ID</div><div class="ic-val">2ACxAi9 TAMII-1</div></div>
+          <div class="info-cell"><div class="ic-lbl">GFP Signal</div><div class="ic-val" style="color:var(--gfp)">5-HT2A-EGFP-CT</div></div>
+          <div class="info-cell"><div class="ic-lbl">Channel</div><div class="ic-val" style="color:var(--gfp)">GFP only</div></div>
+          <div class="info-cell wide">
+            <div class="ic-lbl">Induction Protocol</div>
+            <div class="ic-val">Tamoxifen (100 mg/kg, i.p.) × 4 injections at P39–42<br>2 weeks incubation · Harvested at P56</div>
+          </div>
+          <div class="info-cell"><div class="ic-lbl">Scanner</div><div class="ic-val">Olympus VS120 · .VSI format</div></div>
+          <div class="info-cell"><div class="ic-lbl">Images</div><div class="ic-val">Full resolution · Original export</div></div>
+          <div class="info-cell"><div class="ic-lbl">Sections</div><div class="ic-val">31 coronal · Rostral→Caudal</div></div>
+          <div class="info-cell wide">
+            <div class="ic-lbl">Section IDs</div>
+            <div class="ic-val" style="color:var(--txt2);font-size:10px">TC-1_01→TC-1_10 · TC-2_02→TC-2_09 · TC-3_02→TC-3_09 · TC-4_02→TC-4_06</div>
+          </div>
+        </div>
+        <div id="info-linkarea" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- VIEWER MODAL -->
+<div id="viewer-modal">
+  <div class="vm-box">
+    <div class="vm-hdr">
+      <div>
+        <div class="vm-title" id="vm-title">—</div>
+        <div class="vm-sub">2ACxAi9 TAMII-1 · Htr2a-EGFP-CT-IRES-CreERT2 · GFP channel · Olympus VS120</div>
+      </div>
+      <div class="vm-nav">
+        <button class="vm-navbtn" onclick="navSec(-1)">◀</button>
+        <div class="vm-count" id="vm-count">1 / 31</div>
+        <button class="vm-navbtn" onclick="navSec(1)">▶</button>
+        <button class="vm-close" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+
+    <div class="vm-body">
+      <div class="vm-stage-wrap" id="vm-stage-wrap">
+        <div class="vm-canvas-container" id="vm-canvas-container">
+          <canvas id="vm-cv-base" class="vm-canvas"></canvas>
+          <canvas id="vm-cv-gfp"  class="vm-canvas"></canvas>
+        </div>
+        <div class="vm-chl">GFP · 5-HT2A-EGFP-CT</div>
+        <div class="vm-coords" id="vm-coords">x:— y:—</div>
+        <div class="vm-scalebar"><div class="vm-sbline"></div><div class="vm-sbtxt">100μm</div></div>
+        <div class="vm-zoom-ctrl">
+          <button class="vm-zbtn" onclick="doZoom(1.35)">+</button>
+          <div class="vm-zlvl" id="vm-zlvl">1×</div>
+          <button class="vm-zbtn" onclick="doZoom(0.74)">−</button>
+          <button class="vm-zbtn" onclick="resetView()" style="font-size:10px">↺</button>
+        </div>
+        <div class="vm-loading" id="vm-loading">
+          <div class="vm-spin"></div>
+          <div class="vm-load-msg" id="vm-load-msg">Loading full resolution…</div>
+        </div>
+        <div class="dl-overlay" id="dl-overlay">
+          <div class="dl-spin"></div><div class="dl-msg" id="dl-msg">Rendering…</div>
+        </div>
+      </div>
+
+      <div class="vm-right">
+        <div class="cp-sec">
+          <div class="cp-lbl">Master Brightness</div>
+          <div class="master-bd">
+            <input type="range" class="bd-range" id="master-bd" min="10" max="300" value="100" oninput="updateBD(this.value)">
+            <div class="bd-labels"><span>Dark</span><span id="bdval">100%</span><span>Bright</span></div>
+          </div>
+        </div>
+        <div class="cp-sec">
+          <div class="cp-lbl">GFP Adjustment</div>
+          <div class="bdrow">
+            <div class="bdlabel"><span>Brightness</span><span id="vgb">100</span></div>
+            <input type="range" class="bdslider" id="sl-gb" min="10" max="300" value="100" oninput="render()">
+          </div>
+          <div class="bdrow">
+            <div class="bdlabel"><span>Contrast</span><span id="vgc">0</span></div>
+            <input type="range" class="bdslider" id="sl-gc" min="-100" max="100" value="0" oninput="render()">
+          </div>
+        </div>
+        <div class="cp-sec">
+          <div class="cp-lbl">Download</div>
+          <div class="dl-bar">
+            <button class="dlbtn" onclick="dlSection()">⬇ GFP JPG (full res)</button>
+          </div>
+        </div>
+        <div class="cp-sec" id="cp-share" style="display:none">
+          <div class="cp-lbl">Share</div>
+          <div class="linkbox">
+            <div class="linktitle">↗ Share Atlas</div>
+            <div class="linkrow">
+              <input class="linkinp" id="share-val" readonly value=""/>
+              <button class="copybtn" id="share-btn" onclick="copyLink()">Copy</button>
+            </div>
+            <div class="linkhint">Read-only collaborator access.</div>
+          </div>
+        </div>
+        <div class="sec-infobox" id="vm-secinfo">—</div>
+      </div>
+    </div>
+
+    <div class="vm-strip-wrap">
+      <div class="vm-strip-lbl">All Sections — Click to Navigate</div>
+      <div class="vm-strip" id="vm-strip"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── SECTION LIST ──────────────────────────────────────────────
+// Images are loaded from the "images/" folder in the same repo
+// File naming: TC-1_01.jpg, TC-1_02.jpg … (exact match)
+const SECTIONS = [
+  'TC-1_01','TC-1_02','TC-1_03','TC-1_04','TC-1_05',
+  'TC-1_06','TC-1_07','TC-1_08','TC-1_09','TC-1_10',
+  'TC-2_02','TC-2_03','TC-2_04','TC-2_05','TC-2_06',
+  'TC-2_07','TC-2_08','TC-2_09',
+  'TC-3_02','TC-3_03','TC-3_04','TC-3_05','TC-3_06',
+  'TC-3_07','TC-3_08','TC-3_09',
+  'TC-4_02','TC-4_03','TC-4_04','TC-4_05','TC-4_06'
+];
+const N = SECTIONS.length;
+
+// Image path builder — change "images/" if you rename the folder
+function imgPath(key) { return 'images/' + key + '.jpg'; }
+
+// ── AUTH ──────────────────────────────────────────────────────
+const ROLES = {
+  owner: {label:'Principal Investigator', av:'PI', pass:'owner123'},
+  user:  {label:'Collaborator / Reader',  av:'U',  pass:'user456'},
+};
+let role = null;
+
+function tryLogin() {
+  const r = document.getElementById('rsel').value;
+  const p = document.getElementById('pin').value;
+  if (!r || ROLES[r].pass !== p) { document.getElementById('lerr').style.display='block'; return; }
+  document.getElementById('lerr').style.display = 'none';
+  role = r;
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('uav').textContent = ROLES[r].av;
+  document.getElementById('uname').textContent = ROLES[r].label;
+  document.getElementById('sbrole').textContent = '● ' + ROLES[r].label;
+  if (role === 'owner') {
+    document.getElementById('cp-share').style.display = 'block';
+    document.getElementById('share-val').value = window.location.href;
+    buildInfoLink();
+  }
+  buildGrid();
+}
+document.getElementById('pin').addEventListener('keydown', e => { if (e.key==='Enter') tryLogin(); });
+function logout() {
+  role = null; closeModal();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('pin').value = '';
+  document.getElementById('rsel').value = '';
+}
+
+// ── GRID ──────────────────────────────────────────────────────
+function buildGrid() {
+  document.getElementById('sec-grid').innerHTML = SECTIONS.map((s,i) => `
+    <div class="sec-card" onclick="openModal(${i})">
+      <img class="sec-img" src="${imgPath(s)}" alt="${s}" loading="lazy">
+      <div class="sec-overlay"><span style="font-size:22px">🔬</span></div>
+      <div class="sec-footer">
+        <div><div class="sec-id">${s.replace('TC-','')}</div><div class="sec-dot"></div></div>
+        <div class="sec-num">#${i+1}</div>
+      </div>
+    </div>`).join('');
+}
+
+function buildInfoLink() {
+  const a = document.getElementById('info-linkarea'); if (!a) return;
+  a.innerHTML = `<div class="linkbox"><div class="linktitle">↗ Share This Atlas</div>
+    <div class="linkrow">
+      <input class="linkinp" id="info-lval" readonly value="${window.location.href}"/>
+      <button class="copybtn" id="info-lbtn" onclick="copyInfoLink()">Copy</button>
+    </div>
+    <div class="linkhint">Share this URL for read-only collaborator access.</div></div>`;
+}
+function copyInfoLink() {
+  navigator.clipboard?.writeText(document.getElementById('info-lval')?.value);
+  const b = document.getElementById('info-lbtn'); b.textContent='✓'; b.classList.add('copied');
+  setTimeout(()=>{ b.textContent='Copy'; b.classList.remove('copied'); }, 2000);
+  toast('✓ Link copied');
+}
+function copyLink() {
+  navigator.clipboard?.writeText(document.getElementById('share-val')?.value);
+  const b = document.getElementById('share-btn'); b.textContent='✓'; b.classList.add('copied');
+  setTimeout(()=>{ b.textContent='Copy'; b.classList.remove('copied'); }, 2000);
+  toast('✓ Link copied');
+}
+function navTo(name, el) {
+  document.querySelectorAll('.sbi').forEach(b=>b.classList.remove('on')); el.classList.add('on');
+  document.getElementById('panel-atlas').style.display = name==='atlas' ? 'block' : 'none';
+  document.getElementById('panel-info').style.display  = name==='info'  ? 'block' : 'none';
+}
+
+// ── MODAL STATE ───────────────────────────────────────────────
+let curSec=0, zoomLv=1, panX=0, panY=0, masterBright=100;
+const loadedImgs = {};   // key → HTMLImageElement (full res, loaded on demand)
+const imgDims    = {};   // key → {w, h} discovered after load
+let isDragging=false, dragStartX=0, dragStartY=0, panStartX=0, panStartY=0;
+
+function openModal(i) {
+  curSec=i; zoomLv=1; panX=0; panY=0;
+  document.getElementById('viewer-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  buildStrip(); updateHdr(); loadAndRender(i);
+  setupInteraction();
+}
+function closeModal() {
+  document.getElementById('viewer-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('viewer-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('viewer-modal')) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('viewer-modal').classList.contains('open')) return;
+  if (e.key==='Escape') closeModal();
+  if (e.key==='ArrowRight') navSec(1);
+  if (e.key==='ArrowLeft')  navSec(-1);
+  if (e.key==='+') doZoom(1.35);
+  if (e.key==='-') doZoom(0.74);
+});
+
+function navSec(dir) {
+  curSec = Math.max(0, Math.min(N-1, curSec+dir));
+  zoomLv=1; panX=0; panY=0; updateHdr();
+  document.querySelectorAll('.vm-thumb').forEach((t,i) => t.classList.toggle('on', i===curSec));
+  const th = document.querySelectorAll('.vm-thumb')[curSec];
+  if (th) th.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  loadAndRender(curSec);
+}
+function navSecTo(i) {
+  curSec=i; zoomLv=1; panX=0; panY=0;
+  document.querySelectorAll('.vm-thumb').forEach((t,j) => t.classList.toggle('on', j===i));
+  updateHdr(); loadAndRender(i);
+}
+function updateHdr() {
+  const s = SECTIONS[curSec];
+  document.getElementById('vm-title').textContent = `Section ${curSec+1} / ${N}  ·  ${s}`;
+  document.getElementById('vm-count').textContent = `${curSec+1} / ${N}`;
+  document.getElementById('vm-secinfo').innerHTML =
+    `<b>ID:</b> ${s} · <b>#${curSec+1}</b>/${N}<br><b>Mouse:</b> 2ACxAi9 TAMII-1<br><b>Channel:</b> GFP · 5-HT2A-EGFP-CT<br><b>Scanner:</b> Olympus VS120<br><b>Induction:</b> TAM 100mg/kg×4, P39–42<br><b>Harvest:</b> P56`;
+}
+function buildStrip() {
+  document.getElementById('vm-strip').innerHTML = SECTIONS.map((s,i) => `
+    <div class="vm-thumb${i===curSec?' on':''}" onclick="navSecTo(${i})">
+      <img src="${imgPath(s)}" alt="${s}" loading="lazy">
+      <div class="vm-thumb-lbl">${s.replace('TC-','')}</div>
+    </div>`).join('');
+  setTimeout(() => {
+    const th = document.querySelectorAll('.vm-thumb')[curSec];
+    if (th) th.scrollIntoView({behavior:'instant', block:'nearest', inline:'center'});
+  }, 50);
+}
+
+// ── IMAGE LOADING ─────────────────────────────────────────────
+// Full-res images load on demand when modal opens
+function loadAndRender(i) {
+  const key = SECTIONS[i];
+  if (loadedImgs[key]) { render(); return; }
+
+  // Show loading spinner
+  const spinner = document.getElementById('vm-loading');
+  document.getElementById('vm-load-msg').textContent = 'Loading full resolution…';
+  spinner.classList.add('show');
+
+  const img = new Image();
+  img.onload = () => {
+    loadedImgs[key] = img;
+    imgDims[key] = { w: img.naturalWidth, h: img.naturalHeight };
+    spinner.classList.remove('show');
+    render();
+    // Preload neighbours quietly
+    [-1,1].forEach(d => {
+      const ni = i+d; if (ni<0||ni>=N) return;
+      const nk = SECTIONS[ni]; if (loadedImgs[nk]) return;
+      const pre = new Image();
+      pre.onload = () => { loadedImgs[nk]=pre; imgDims[nk]={w:pre.naturalWidth,h:pre.naturalHeight}; };
+      pre.src = imgPath(nk);
+    });
+  };
+  img.onerror = () => {
+    spinner.classList.remove('show');
+    document.getElementById('vm-load-msg').textContent = 'Image not found';
+    toast('✗ Could not load ' + key, 'warn');
+  };
+  img.src = imgPath(key);
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render() {
+  const key = SECTIONS[curSec];
+  const imgEl = loadedImgs[key];
+  if (!imgEl) return;
+
+  const d = imgDims[key];
+  const aspect = d.h / d.w;
+  const wrap = document.getElementById('vm-stage-wrap');
+  const wrapW = wrap.clientWidth || 800;
+  const wrapH = wrap.clientHeight || 600;
+  let fitW, fitH;
+  if (wrapW/wrapH > 1/aspect) { fitH=wrapH; fitW=fitH/aspect; }
+  else { fitW=wrapW; fitH=fitW*aspect; }
+
+  const container = document.getElementById('vm-canvas-container');
+  container.style.width  = fitW + 'px';
+  container.style.height = fitH + 'px';
+  container.style.left   = (wrapW-fitW)/2 + 'px';
+  container.style.top    = (wrapH-fitH)/2 + 'px';
+  container.style.transform = `translate(${panX}px,${panY}px) scale(${zoomLv})`;
+  container.style.transformOrigin = 'center center';
+
+  ['vm-cv-base','vm-cv-gfp'].forEach(id => {
+    const cv = document.getElementById(id);
+    cv.width=fitW; cv.height=fitH;
+    cv.style.width=fitW+'px'; cv.style.height=fitH+'px';
+  });
+
+  const ctxBase = document.getElementById('vm-cv-base').getContext('2d');
+  ctxBase.fillStyle = '#000'; ctxBase.fillRect(0,0,fitW,fitH);
+
+  const cvG = document.getElementById('vm-cv-gfp');
+  const ctxG = cvG.getContext('2d');
+  ctxG.clearRect(0,0,fitW,fitH);
+  const mb = masterBright/100;
+  const bright = getSl('sl-gb')/100 * mb;
+  const cont   = getSl('sl-gc')/100;
+  ctxG.filter = `brightness(${bright}) contrast(${1+cont}) saturate(1.2)`;
+  ctxG.drawImage(imgEl, 0, 0, fitW, fitH);
+  ctxG.filter = 'none';
+  ctxG.globalCompositeOperation = 'multiply';
+  ctxG.fillStyle = 'rgba(30,255,30,0.4)';
+  ctxG.fillRect(0,0,fitW,fitH);
+  ctxG.globalCompositeOperation = 'source-over';
+
+  document.getElementById('vm-zlvl').textContent = zoomLv.toFixed(1) + '×';
+  wrap.classList.toggle('grab', zoomLv > 1);
+}
+
+function getSl(id) {
+  const el = document.getElementById(id); if (!el) return 100;
+  const v = parseInt(el.value);
+  const m = {'sl-gb':'vgb','sl-gc':'vgc'};
+  const l = document.getElementById(m[id]); if (l) l.textContent = v;
+  return v;
+}
+
+// ── PAN / ZOOM / INTERACTION ──────────────────────────────────
+function setupInteraction() {
+  const wrap = document.getElementById('vm-stage-wrap');
+  if (wrap._setup) return; wrap._setup = true;
+
+  wrap.addEventListener('mousedown', e => {
+    if (zoomLv<=1 || e.button!==0) return;
+    isDragging=true; dragStartX=e.clientX; dragStartY=e.clientY;
+    panStartX=panX; panStartY=panY;
+    wrap.classList.add('grabbing'); e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    panX=panStartX+(e.clientX-dragStartX);
+    panY=panStartY+(e.clientY-dragStartY);
+    clampPan(); render();
+  });
+  window.addEventListener('mouseup', () => {
+    if (isDragging) { isDragging=false; document.getElementById('vm-stage-wrap').classList.remove('grabbing'); }
+  });
+  wrap.addEventListener('touchstart', e => {
+    if (zoomLv<=1 || e.touches.length!==1) return;
+    isDragging=true; dragStartX=e.touches[0].clientX; dragStartY=e.touches[0].clientY;
+    panStartX=panX; panStartY=panY; e.preventDefault();
+  }, {passive:false});
+  wrap.addEventListener('touchmove', e => {
+    if (!isDragging || e.touches.length!==1) return;
+    panX=panStartX+(e.touches[0].clientX-dragStartX);
+    panY=panStartY+(e.touches[0].clientY-dragStartY);
+    clampPan(); render(); e.preventDefault();
+  }, {passive:false});
+  wrap.addEventListener('touchend', () => { isDragging=false; });
+  wrap.addEventListener('wheel', e => { e.preventDefault(); doZoom(e.deltaY<0?1.12:0.89); }, {passive:false});
+
+  // Mouse coords (maps screen → original full-res pixel coords)
+  wrap.addEventListener('mousemove', e => {
+    const key = SECTIONS[curSec];
+    if (!imgDims[key]) return;
+    const d = imgDims[key];
+    const r = wrap.getBoundingClientRect();
+    const wrapW=wrap.clientWidth, wrapH=wrap.clientHeight;
+    const aspect=d.h/d.w;
+    let fitW,fitH;
+    if (wrapW/wrapH>1/aspect){fitH=wrapH;fitW=fitH/aspect;}else{fitW=wrapW;fitH=fitW*aspect;}
+    const left=(wrapW-fitW)/2, top=(wrapH-fitH)/2;
+    const imgX = ((e.clientX-r.left-left-panX) / fitW / zoomLv + 0.5) * d.w;
+    const imgY = ((e.clientY-r.top-top-panY)   / fitH / zoomLv + 0.5) * d.h;
+    document.getElementById('vm-coords').textContent =
+      `x:${Math.round(Math.max(0,Math.min(d.w,imgX)))} y:${Math.round(Math.max(0,Math.min(d.h,imgY)))}`;
+  });
+}
+
+function clampPan() {
+  const wrap = document.getElementById('vm-stage-wrap');
+  const wrapW=wrap.clientWidth||800, wrapH=wrap.clientHeight||600;
+  const key=SECTIONS[curSec]; if (!imgDims[key]) return;
+  const d=imgDims[key]; const aspect=d.h/d.w;
+  let fitW,fitH;
+  if (wrapW/wrapH>1/aspect){fitH=wrapH;fitW=fitH/aspect;}else{fitW=wrapW;fitH=fitW*aspect;}
+  const maxX=Math.max(0,fitW*(zoomLv-1)/2);
+  const maxY=Math.max(0,fitH*(zoomLv-1)/2);
+  panX=Math.max(-maxX,Math.min(maxX,panX));
+  panY=Math.max(-maxY,Math.min(maxY,panY));
+}
+function doZoom(f) {
+  zoomLv=Math.min(20,Math.max(0.5,zoomLv*f));
+  if (zoomLv<=1){zoomLv=1;panX=0;panY=0;}else clampPan();
+  render();
+}
+function resetView() { zoomLv=1; panX=0; panY=0; render(); }
+window.addEventListener('resize', () => render());
+function updateBD(v) { masterBright=parseInt(v); document.getElementById('bdval').textContent=v+'%'; render(); }
+
+// ── DOWNLOAD ─────────────────────────────────────────────────
+async function dlSection() {
+  const key = SECTIONS[curSec];
+  if (!loadedImgs[key]) { toast('✗ Image not loaded yet', 'warn'); return; }
+  document.getElementById('dl-msg').textContent = 'Rendering…';
+  document.getElementById('dl-overlay').classList.add('show');
+  await new Promise(r=>setTimeout(r,200));
+  try {
+    const d=imgDims[key]; const W=d.w, H=d.h;
+    const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+    const ctx=cv.getContext('2d');
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+    const mb=masterBright/100;
+    const bright=getSl('sl-gb')/100*mb; const cont=getSl('sl-gc')/100;
+    ctx.filter=`brightness(${bright}) contrast(${1+cont}) saturate(1.2)`;
+    ctx.drawImage(loadedImgs[key],0,0,W,H); ctx.filter='none';
+    ctx.globalCompositeOperation='multiply';
+    ctx.fillStyle='rgba(30,255,30,0.4)'; ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
+    // Annotation bar
+    ctx.fillStyle='rgba(7,9,12,.72)'; ctx.fillRect(0,H-58,W,58);
+    ctx.font='bold 18px Arial'; ctx.fillStyle='#39e55e';
+    ctx.fillText(`Htr2a-EGFP-CT-IRES-CreERT2 · 2ACxAi9 TAMII-1 · ${key} · GFP`, 18, H-33);
+    ctx.font='13px Courier New'; ctx.fillStyle='rgba(255,255,255,.5)';
+    ctx.fillText(`Section ${curSec+1}/${N} · TAM 100mg/kg×4 P39-42 · Harvest P56 · Olympus VS120 · NeuroAtlas`, 18, H-12);
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.fillRect(W-90,18,60,2);
+    ctx.font='12px Courier New'; ctx.fillStyle='rgba(255,255,255,.4)'; ctx.fillText('100μm',W-90,15);
+    const a=document.createElement('a');
+    a.download=`NeuroAtlas_Htr2a_2ACxAi9_TAMII1_${key}_GFP.jpg`;
+    a.href=cv.toDataURL('image/jpeg',0.93); a.click();
+    toast('✓ Downloaded full-res GFP JPG');
+  } catch(err) { toast('✗ '+err.message,'warn'); }
+  document.getElementById('dl-overlay').classList.remove('show');
+}
+
+function toast(msg, type='ok') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.borderColor=type==='warn'?'var(--locked)':'var(--gfp)';
+  t.style.color=type==='warn'?'var(--locked)':'var(--gfp)';
+  t.style.display='block'; clearTimeout(t._t);
+  t._t=setTimeout(()=>t.style.display='none', 3200);
+}
+</script>
+</body>
+</html>
