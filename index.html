@@ -20,6 +20,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.5)}}
 .lsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
 .lline{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gfp);margin-bottom:26px;}
+.note{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);line-height:1.7}
 .llbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px;}
 .lsel,.linp{width:100%;background:var(--bg);border:1px solid var(--bdr2);border-radius:9px;padding:10px 14px;color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;margin-bottom:14px;transition:border-color .2s;}
 .lsel:focus,.linp:focus{border-color:var(--grn);}
@@ -173,7 +174,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="lcard">
     <div class="lbrand"><span class="lpulse"></span>NeuroAtlas</div>
     <div class="lsub">Whole Brain Mapping Platform</div>
-    <div class="lline">Htr2aEGFP-CT-IRES-CreERT2 · TAMII-1 · GFP channel · Full resolution</div>
+    <div class="lline">Htr2aEGFP-CT-IRES-CreERT2 · TAMII-1 · GFP channel · Web viewer</div>
     <div class="llbl">Role</div>
     <select class="lsel" id="rsel">
       <option value="">— Select role —</option>
@@ -185,6 +186,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="lerr" id="lerr">✗ Incorrect password</div>
     <button class="lbtn" onclick="tryLogin()">Access Atlas →</button>
     <div class="lhint"><b>owner123</b> → Principal Investigator<br><b>user456</b> &nbsp;→ Collaborator / Reader</div>
+    <div class="note">For fast loading, this atlas uses <b>thumbs</b> in the grid and <b>full</b> images only inside the viewer.</div>
   </div>
 </div>
 
@@ -214,7 +216,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div>
         <div class="ptitle">Htr2a · <em>5-HT2A-EGFP-CT</em></div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:3px">
-          2ACxAi9 TAMII-1 · 38 coronal sections · GFP channel · Full resolution · Rostral→Caudal
+          2ACxAi9 TAMII-1 · 38 coronal sections · GFP channel · Web-optimized viewer · Rostral→Caudal
         </div>
       </div>
       <div class="uchip"><div class="uav" id="uav">?</div><span id="uname">—</span></div>
@@ -225,7 +227,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="stat"><div class="stat-n" style="color:var(--gfp)">38</div><div class="stat-l">Sections</div></div>
       <div class="stat"><div class="stat-n" style="color:var(--gfp)">GFP</div><div class="stat-l">Channel</div></div>
       <div class="stat"><div class="stat-n">1</div><div class="stat-l">Mouse</div></div>
-      <div class="stat"><div class="stat-n" style="color:var(--grn)">Full res</div><div class="stat-l">VS120 export</div></div>
+      <div class="stat"><div class="stat-n" style="color:var(--grn)">Web view</div><div class="stat-l">Thumb + full</div></div>
       <div class="stat"><div class="stat-n">VS120</div><div class="stat-l">Scanner</div></div>
     </div>
 
@@ -233,7 +235,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="panel-hdr">
         <div>
           <div class="panel-title">Whole Brain Coronal Series — GFP Channel</div>
-          <div class="panel-sub">Click any section to open viewer · ◀ ▶ keys to navigate · Scroll wheel to zoom</div>
+          <div class="panel-sub">Click any section to open viewer · thumbnails load first · ◀ ▶ keys to navigate · Scroll wheel to zoom</div>
         </div>
         <div class="panel-badge">38 sections · 5-HT2A-EGFP-CT · Rostral→Caudal</div>
       </div>
@@ -314,7 +316,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         </div>
         <div class="vm-loading" id="vm-loading">
           <div class="vm-spin"></div>
-          <div class="vm-load-msg" id="vm-load-msg">Loading full resolution…</div>
+          <div class="vm-load-msg" id="vm-load-msg">Loading viewer image…</div>
         </div>
         <div class="dl-overlay" id="dl-overlay">
           <div class="dl-spin"></div><div class="dl-msg" id="dl-msg">Rendering…</div>
@@ -343,7 +345,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <div class="cp-sec">
           <div class="cp-lbl">Download</div>
           <div class="dl-bar">
-            <button class="dlbtn" onclick="dlSection()">⬇ GFP JPG (full res)</button>
+            <button class="dlbtn" onclick="dlSection()">⬇ GFP JPG (viewer image)</button>
           </div>
         </div>
         <div class="cp-sec" id="cp-share" style="display:none">
@@ -372,8 +374,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <script>
 // ── SECTION LIST ──────────────────────────────────────────────
-// Images are loaded from the "images/" folder in the same repo
-// File naming: TC-1_01.jpg, TC-1_02.jpg … (exact match)
+// Recommended folder structure:
+// Images/thumbs/TC-1_01.jpg  -> small preview used in grid/strip
+// Images/full/TC-1_01.jpg    -> larger image used in viewer/download
+// Fallback: if thumbs/full folders are missing, it will use Images/TC-1_01.jpg
 const SECTIONS = [
   'TC-1_01','TC-1_02','TC-1_03','TC-1_04','TC-1_05',
   'TC-1_06','TC-1_07','TC-1_08','TC-1_09','TC-1_10',
@@ -387,8 +391,31 @@ const SECTIONS = [
 ];
 const N = SECTIONS.length;
 
-// Image path builder — change "images/" if you rename the folder
-function imgPath(key) { return 'Images/' + key + '.jpg'; }
+// Image path builders
+function legacyPath(key) { return 'Images/' + key + '.jpg'; }
+function thumbPath(key) { return 'Images/thumbs/' + key + '.jpg'; }
+function fullPath(key)  { return 'Images/full/' + key + '.jpg'; }
+
+function setThumbImg(imgEl, key) {
+  imgEl.loading = 'lazy';
+  imgEl.decoding = 'async';
+  imgEl.src = thumbPath(key);
+  imgEl.onerror = () => {
+    if (imgEl.dataset.fallbackDone === '1') return;
+    imgEl.dataset.fallbackDone = '1';
+    imgEl.src = legacyPath(key);
+  };
+}
+
+function setFullImg(imgEl, key) {
+  imgEl.decoding = 'async';
+  imgEl.src = fullPath(key);
+  imgEl.onerror = () => {
+    if (imgEl.dataset.fallbackDone === '1') return;
+    imgEl.dataset.fallbackDone = '1';
+    imgEl.src = legacyPath(key);
+  };
+}
 
 // ── AUTH ──────────────────────────────────────────────────────
 const ROLES = {
@@ -428,13 +455,23 @@ function logout() {
 function buildGrid() {
   document.getElementById('sec-grid').innerHTML = SECTIONS.map((s,i) => `
     <div class="sec-card" onclick="openModal(${i})">
-      <img class="sec-img" src="${imgPath(s)}" alt="${s}" loading="lazy">
+      <img class="sec-img" src="${thumbPath(s)}" alt="${s}" loading="lazy" decoding="async" onerror="if(!this.dataset.fallbackDone){this.dataset.fallbackDone=1;this.src=legacyPath('${s}');}">
       <div class="sec-overlay"><span style="font-size:22px">🔬</span></div>
       <div class="sec-footer">
         <div><div class="sec-id">${s.replace('TC-','')}</div><div class="sec-dot"></div></div>
         <div class="sec-num">#${i+1}</div>
       </div>
     </div>`).join('');
+  preloadThumbs(SECTIONS.slice(0, 8));
+}
+
+function preloadThumbs(keys) {
+  keys.forEach(key => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = thumbPath(key);
+    img.onerror = () => { img.src = legacyPath(key); };
+  });
 }
 
 function buildInfoLink() {
@@ -466,7 +503,7 @@ function navTo(name, el) {
 
 // ── MODAL STATE ───────────────────────────────────────────────
 let curSec=0, zoomLv=1, panX=0, panY=0, masterBright=100;
-const loadedImgs = {};   // key → HTMLImageElement (full res, loaded on demand)
+const loadedImgs = {};   // key → HTMLImageElement (viewer image, loaded on demand)
 const imgDims    = {};   // key → {w, h} discovered after load
 let isDragging=false, dragStartX=0, dragStartY=0, panStartX=0, panStartY=0;
 
@@ -516,7 +553,7 @@ function updateHdr() {
 function buildStrip() {
   document.getElementById('vm-strip').innerHTML = SECTIONS.map((s,i) => `
     <div class="vm-thumb${i===curSec?' on':''}" onclick="navSecTo(${i})">
-      <img src="${imgPath(s)}" alt="${s}" loading="lazy">
+      <img src="${thumbPath(s)}" alt="${s}" loading="lazy" decoding="async" onerror="if(!this.dataset.fallbackDone){this.dataset.fallbackDone=1;this.src=legacyPath('${s}');}">
       <div class="vm-thumb-lbl">${s.replace('TC-','')}</div>
     </div>`).join('');
   setTimeout(() => {
@@ -526,14 +563,14 @@ function buildStrip() {
 }
 
 // ── IMAGE LOADING ─────────────────────────────────────────────
-// Full-res images load on demand when modal opens
+// Viewer images load on demand when modal opens
 function loadAndRender(i) {
   const key = SECTIONS[i];
   if (loadedImgs[key]) { render(); return; }
 
   // Show loading spinner
   const spinner = document.getElementById('vm-loading');
-  document.getElementById('vm-load-msg').textContent = 'Loading full resolution…';
+  document.getElementById('vm-load-msg').textContent = 'Loading viewer image…';
   spinner.classList.add('show');
 
   const img = new Image();
@@ -548,7 +585,7 @@ function loadAndRender(i) {
       const nk = SECTIONS[ni]; if (loadedImgs[nk]) return;
       const pre = new Image();
       pre.onload = () => { loadedImgs[nk]=pre; imgDims[nk]={w:pre.naturalWidth,h:pre.naturalHeight}; };
-      pre.src = imgPath(nk);
+      setFullImg(pre, nk);
     });
   };
   img.onerror = () => {
@@ -556,7 +593,7 @@ function loadAndRender(i) {
     document.getElementById('vm-load-msg').textContent = 'Image not found';
     toast('✗ Could not load ' + key, 'warn');
   };
-  img.src = imgPath(key);
+  setFullImg(img, key);
 }
 
 // ── RENDER ────────────────────────────────────────────────────
@@ -720,7 +757,7 @@ async function dlSection() {
     const a=document.createElement('a');
     a.download=`NeuroAtlas_Htr2a_2ACxAi9_TAMII1_${key}_GFP.jpg`;
     a.href=cv.toDataURL('image/jpeg',0.93); a.click();
-    toast('✓ Downloaded full-res GFP JPG');
+    toast('✓ Downloaded viewer GFP JPG');
   } catch(err) { toast('✗ '+err.message,'warn'); }
   document.getElementById('dl-overlay').classList.remove('show');
 }
