@@ -1,197 +1,417 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>NeuroAtlas — Htr2a GFP Atlas</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
-
 <style>
-
-body{
-background:#07090c;
-color:#dde2ec;
-font-family:'Syne',sans-serif;
-margin:0;
+:root{
+  --bg:#07090c; --surf:#0c0f15; --surf2:#12161e; --bdr:#1a1f2c; --bdr2:#222a3a;
+  --txt:#dde2ec; --txt2:#8a95af; --txt3:#556178; --grn:#3ecf8e; --gfp:#39e55e; --warn:#bf4567;
 }
-
-header{
-padding:25px 40px;
-border-bottom:1px solid #1a1f2c;
-display:flex;
-justify-content:space-between;
-align-items:center;
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(62,207,142,.06),transparent);pointer-events:none}
+a{color:inherit}
+.app{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:240px 1fr}
+.sidebar{
+  background:var(--surf);border-right:1px solid var(--bdr);padding:18px 0;display:flex;flex-direction:column;min-height:100vh;
 }
-
-h1{
-font-size:22px;
-font-weight:600;
+.logo{padding:0 18px 18px;border-bottom:1px solid var(--bdr)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--grn);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.55)}}
+.subline,.monoline{font-family:'JetBrains Mono',monospace}
+.subline{font-size:9px;color:var(--gfp);margin-top:5px}
+.monoline{font-size:8px;color:var(--txt3);margin-top:3px}
+.ssec{padding:14px 18px 6px;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3)}
+.sitem{
+  margin:0 8px 2px;padding:9px 10px;border-radius:9px;color:var(--txt2);cursor:pointer;font-size:13px;border:1px solid transparent;
 }
-
-#viewer{
-width:100%;
-height:75vh;
-background:black;
+.sitem:hover{background:var(--surf2);color:var(--txt)}
+.sitem.on{background:rgba(62,207,142,.08);color:var(--grn);border-color:rgba(62,207,142,.14)}
+.spacer{flex:1}
+.main{padding:24px 28px 20px;min-width:0}
+.topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+.title{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.title em{font-style:normal;color:var(--gfp)}
+.subtitle{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:5px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.stat{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:12px 15px;min-width:110px}
+.stat .n{font-size:20px;font-weight:700}
+.stat .l{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;min-height:68vh}
+.card{background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;overflow:hidden}
+.cardhdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cardtitle{font-size:14px;font-weight:700}
+.cardsub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:3px}
+.badge{margin-left:auto;background:rgba(62,207,142,.08);border:1px solid rgba(62,207,142,.15);color:var(--grn);font-family:'JetBrains Mono',monospace;font-size:9px;border-radius:6px;padding:4px 10px}
+.viewerwrap{position:relative;height:72vh;background:#000}
+#viewer{width:100%;height:100%}
+.overlay{
+  position:absolute;left:12px;top:12px;display:flex;gap:8px;align-items:center;z-index:10;pointer-events:none
 }
-
-.sectionBar{
-display:flex;
-gap:10px;
-overflow-x:auto;
-padding:15px;
-border-top:1px solid #1a1f2c;
-background:#0c0f15;
+.chip{font-family:'JetBrains Mono',monospace;font-size:8px;padding:4px 9px;border-radius:5px;background:rgba(12,15,21,.82);border:1px solid var(--bdr2);color:var(--gfp);backdrop-filter:blur(4px)}
+.overlay-right{position:absolute;right:12px;top:12px;z-index:10;display:flex;gap:6px;flex-wrap:wrap}
+.btn{
+  background:rgba(12,15,21,.88);border:1px solid var(--bdr2);color:var(--txt2);border-radius:8px;padding:8px 10px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:.15s
 }
-
-.thumb{
-height:80px;
-border-radius:6px;
-cursor:pointer;
-opacity:.75;
-transition:.2s;
+.btn:hover{border-color:var(--gfp);color:var(--gfp)}
+.btn.warn:hover{border-color:var(--warn);color:var(--warn)}
+.osd-nav{box-shadow:none !important}
+.panel{padding:14px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:8px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7}
+.kv .k{color:var(--txt3)}
+.kv .v{color:var(--txt)}
+.note{margin-top:12px;background:rgba(62,207,142,.04);border:1px solid rgba(62,207,142,.12);border-radius:10px;padding:12px 13px;font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.7;color:var(--txt2)}
+.stripcard{margin-top:14px}
+.striphdr{padding:10px 14px 0;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--txt3);text-transform:uppercase}
+.strip{display:flex;gap:5px;overflow-x:auto;padding:10px 14px 14px}
+.strip::-webkit-scrollbar{height:4px}.strip::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
+.thumb{flex:0 0 auto;width:72px;border-radius:8px;overflow:hidden;border:2px solid var(--bdr);background:#000;cursor:pointer;transition:.15s}
+.thumb:hover{border-color:var(--txt3)}
+.thumb.on{border-color:var(--gfp)}
+.thumb img{display:block;width:72px;height:52px;object-fit:contain;background:#000}
+.thumb label{display:block;padding:3px 4px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt3);background:var(--bg)}
+.thumb.on label{color:var(--gfp)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:14px}
+.gcard{background:var(--surf2);border:1px solid var(--bdr2);border-radius:10px;overflow:hidden;cursor:pointer;transition:.18s}
+.gcard:hover{transform:translateY(-2px);border-color:var(--gfp)}
+.gcard img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#000}
+.gfoot{padding:7px 9px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace}
+.gfoot .id{font-size:9px;color:var(--txt2)} .gfoot .n{font-size:8px;color:var(--txt3)}
+.hide{display:none}
+.toast{
+  position:fixed;right:18px;bottom:18px;background:var(--surf);border:1px solid var(--gfp);border-radius:9px;
+  padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gfp);display:none;z-index:999
 }
-
-.thumb:hover{
-opacity:1;
-transform:scale(1.05);
+@media (max-width: 980px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{padding:16px}
+  .layout{grid-template-columns:1fr}
+  .viewerwrap{height:62vh}
 }
-
-.meta{
-padding:20px 40px;
-font-family:'JetBrains Mono',monospace;
-font-size:12px;
-color:#6b7794;
-}
-
 </style>
-
 </head>
-
-
 <body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="brand"><span class="pulse"></span>NeuroAtlas</div>
+      <div class="subline">Htr2a-EGFP-CT-IRES-CreERT2</div>
+      <div class="monoline">Allen-style deep zoom ready · DZI + JPG fallback</div>
+    </div>
+    <div class="ssec">Atlas</div>
+    <div class="sitem on" id="nav-viewer">🧠 Viewer</div>
+    <div class="sitem" id="nav-grid">🔬 Section Grid</div>
+    <div class="ssec">Channel</div>
+    <div class="sitem" style="pointer-events:none">🟢 GFP · 5-HT2A-EGFP-CT</div>
+    <div class="spacer"></div>
+    <div class="ssec">How it works</div>
+    <div class="sitem" style="cursor:default;color:var(--txt3)">Tiles path: <span style="color:var(--grn)">Tiles/&lt;section&gt;.dzi</span></div>
+    <div class="sitem" style="cursor:default;color:var(--txt3)">Fallback: <span style="color:var(--txt2)">Images/full/&lt;section&gt;.jpg</span></div>
+  </aside>
 
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="title">Htr2a · <em>5-HT2A-EGFP-CT</em></div>
+        <div class="subtitle">2ACxAi9 TAMII-1 · 38 coronal sections · GFP channel · Olympus VS120 · OpenSeadragon viewer</div>
+      </div>
+    </div>
 
-<header>
+    <div class="stats">
+      <div class="stat"><div class="n" style="color:var(--gfp)">38</div><div class="l">Sections</div></div>
+      <div class="stat"><div class="n" style="color:var(--gfp)">GFP</div><div class="l">Channel</div></div>
+      <div class="stat"><div class="n">VS120</div><div class="l">Scanner</div></div>
+      <div class="stat"><div class="n" id="modeStat" style="color:var(--grn)">Auto</div><div class="l">Viewer mode</div></div>
+    </div>
 
-<h1>Htr2a-EGFP-CreERT2 Brain Atlas</h1>
+    <section id="viewerPanel">
+      <div class="layout">
+        <div class="card">
+          <div class="cardhdr">
+            <div>
+              <div class="cardtitle" id="sectionTitle">Section 1 / 38 · TC-1_01</div>
+              <div class="cardsub">Mouse wheel to zoom · drag to pan · arrow keys to switch sections</div>
+            </div>
+            <div class="badge" id="modeBadge">Detecting tile source…</div>
+          </div>
+          <div class="viewerwrap">
+            <div id="viewer"></div>
+            <div class="overlay">
+              <div class="chip">GFP · 5-HT2A-EGFP-CT</div>
+              <div class="chip" id="shareChip">section=TC-1_01</div>
+            </div>
+            <div class="overlay-right">
+              <button class="btn" id="prevBtn">◀ Prev</button>
+              <button class="btn" id="nextBtn">Next ▶</button>
+              <button class="btn" id="copyBtn">Copy link</button>
+              <button class="btn warn" id="fitBtn">Fit view</button>
+            </div>
+          </div>
+        </div>
 
-<div>GFP Channel • Olympus VS120</div>
+        <div class="card">
+          <div class="cardhdr">
+            <div>
+              <div class="cardtitle">Section Metadata</div>
+              <div class="cardsub">Atlas-style viewer with DZI support</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="kv">
+              <div class="k">Section ID</div><div class="v" id="metaSection">TC-1_01</div>
+              <div class="k">Index</div><div class="v" id="metaIndex">1 / 38</div>
+              <div class="k">Mouse line</div><div class="v">Htr2a-EGFP-CT-IRES-CreERT2</div>
+              <div class="k">Sample</div><div class="v">2ACxAi9 TAMII-1</div>
+              <div class="k">Channel</div><div class="v" style="color:var(--gfp)">GFP only</div>
+              <div class="k">Scanner</div><div class="v">Olympus VS120</div>
+              <div class="k">Preferred source</div><div class="v" id="metaSource">Tiles/&lt;section&gt;.dzi</div>
+              <div class="k">Fallback source</div><div class="v">Images/full/&lt;section&gt;.jpg</div>
+            </div>
+            <div class="note">
+              For the best Allen Brain Atlas–style performance, generate
+              <b>Tiles/TC-1_01.dzi</b> plus its <b>_files</b> folder for each section.
+              Until those tiles exist, this page still works by loading the matching
+              JPG from <b>Images/full</b>.
+            </div>
+          </div>
+        </div>
+      </div>
 
-</header>
+      <div class="card stripcard">
+        <div class="striphdr">All sections — click to navigate</div>
+        <div class="strip" id="strip"></div>
+      </div>
+    </section>
 
-
-<div id="viewer"></div>
-
-
-<div class="meta">
-
-Section ID: <span id="sectionLabel">TC-1_01</span>
-
+    <section id="gridPanel" class="hide">
+      <div class="card">
+        <div class="cardhdr">
+          <div>
+            <div class="cardtitle">Whole Brain Coronal Series</div>
+            <div class="cardsub">Thumbnail overview for fast navigation</div>
+          </div>
+          <div class="badge">Images/thumbs</div>
+        </div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </section>
+  </main>
 </div>
 
-
-<div class="sectionBar" id="sectionBar"></div>
-
-
+<div class="toast" id="toast"></div>
 
 <script>
-
-let sections = [
-
-"TC-1_01",
-"TC-1_02",
-"TC-1_03",
-"TC-1_04",
-"TC-1_05",
-"TC-1_06",
-"TC-1_07",
-"TC-1_08",
-"TC-1_09",
-"TC-1_10",
-"TC-2_02",
-"TC-2_03",
-"TC-2_04",
-"TC-2_05",
-"TC-2_06",
-"TC-2_07",
-"TC-2_08"
-
+const SECTIONS = [
+  'TC-1_01','TC-1_02','TC-1_03','TC-1_04','TC-1_05',
+  'TC-1_06','TC-1_07','TC-1_08','TC-1_09','TC-1_10',
+  'TC-2_02','TC-2_03','TC-2_04','TC-2_05','TC-2_06',
+  'TC-2_07','TC-2_08','TC-2_09',
+  'TC-3_02','TC-3_03','TC-3_04','TC-3_05','TC-3_06',
+  'TC-3_07','TC-3_08','TC-3_09',
+  'TC-4_02','TC-4_03','TC-4_04','TC-4_05','TC-4_06',
+  'TC-4_07','TC-4_08','TC-4_09',
+  'TC-5_02','TC-5_03','TC-5_09','TC-5_10'
 ];
 
+function thumbPath(key){ return 'Images/thumbs/' + key + '.jpg'; }
+function altThumbPath(key){ return 'Images/thumbs/resized_' + key + '.jpg'; }
+function fullPath(key){ return 'Images/full/' + key + '.jpg'; }
+function legacyPath(key){ return 'Images/' + key + '.jpg'; }
+function tilePath(key){ return 'Tiles/' + key + '.dzi'; }
 
+let idx = 0;
+let viewer = null;
 
-let viewer = OpenSeadragon({
-
-id:"viewer",
-
-prefixUrl:"https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/",
-
-showNavigator:true,
-
-zoomPerScroll:1.2,
-
-maxZoomPixelRatio:4,
-
-minZoomLevel:0.5,
-
-visibilityRatio:1,
-
-constrainDuringPan:true
-
-});
-
-
-
-function loadSection(section){
-
-viewer.open({
-
-type:"image",
-
-url:"Images/full/" + section + ".jpg"
-
-});
-
-document.getElementById("sectionLabel").innerText = section;
-
+function initViewer(){
+  viewer = OpenSeadragon({
+    id: 'viewer',
+    prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/',
+    showNavigator: true,
+    navigatorPosition: 'BOTTOM_RIGHT',
+    navigatorAutoResize: true,
+    visibilityRatio: 1,
+    constrainDuringPan: true,
+    zoomPerScroll: 1.2,
+    maxZoomPixelRatio: 4,
+    minZoomLevel: 0.7,
+    animationTime: 0.8,
+    blendTime: 0.12,
+    gestureSettingsTouch: { pinchToZoom:true, flickEnabled:true, clickToZoom:false, dblClickToZoom:true },
+    gestureSettingsMouse: { clickToZoom:false, dblClickToZoom:true, scrollToZoom:true }
+  });
 }
 
-
-
-function buildThumbnails(){
-
-let bar=document.getElementById("sectionBar");
-
-sections.forEach(section=>{
-
-let img=document.createElement("img");
-
-img.src="Images/thumbs/resized_" + section + ".jpg";
-
-img.className="thumb";
-
-img.onclick=()=>loadSection(section);
-
-bar.appendChild(img);
-
-});
-
+async function sourceFor(section){
+  const dzi = tilePath(section);
+  try{
+    const r = await fetch(dzi, { method:'HEAD' });
+    if(r.ok){
+      return { type:'dzi', source:dzi, mode:'DZI tiles' };
+    }
+  }catch(e){}
+  // fallback order: full, legacy
+  return {
+    type:'image',
+    source: fullPath(section),
+    fallback: legacyPath(section),
+    mode:'JPG fallback'
+  };
 }
 
+function setThumbSrc(img, section){
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.src = thumbPath(section);
+  img.onerror = () => {
+    if(img.dataset.try2 !== '1'){
+      img.dataset.try2 = '1';
+      img.src = altThumbPath(section);
+    } else if(img.dataset.try3 !== '1'){
+      img.dataset.try3 = '1';
+      img.src = legacyPath(section);
+    }
+  };
+}
 
+async function openSection(i, updateUrl=true){
+  idx = Math.max(0, Math.min(SECTIONS.length-1, i));
+  const section = SECTIONS[idx];
+  const found = await sourceFor(section);
 
-buildThumbnails();
+  document.getElementById('sectionTitle').textContent = `Section ${idx+1} / ${SECTIONS.length} · ${section}`;
+  document.getElementById('metaSection').textContent = section;
+  document.getElementById('metaIndex').textContent = `${idx+1} / ${SECTIONS.length}`;
+  document.getElementById('shareChip').textContent = `section=${section}`;
+  document.getElementById('modeBadge').textContent = found.mode;
+  document.getElementById('modeStat').textContent = found.mode.includes('DZI') ? 'DZI' : 'JPG';
+  document.getElementById('metaSource').textContent = found.mode.includes('DZI') ? tilePath(section) : fullPath(section);
 
-loadSection(sections[0]);
+  if(found.type === 'dzi'){
+    viewer.open(found.source);
+  } else {
+    viewer.open({
+      type: 'image',
+      url: found.source,
+      buildPyramid: false
+    });
+    // fallback if Images/full is missing
+    viewer.addOnceHandler('open-failed', function(){
+      viewer.open({ type:'image', url: found.fallback, buildPyramid:false });
+      document.getElementById('modeBadge').textContent = 'Legacy JPG';
+      document.getElementById('modeStat').textContent = 'Legacy';
+      document.getElementById('metaSource').textContent = found.fallback;
+    });
+  }
 
+  document.querySelectorAll('.thumb').forEach((el, j) => el.classList.toggle('on', j===idx));
+  if(updateUrl){
+    const url = new URL(window.location.href);
+    url.searchParams.set('section', section);
+    history.replaceState({}, '', url);
+  }
+}
 
+function buildStrip(){
+  const strip = document.getElementById('strip');
+  strip.innerHTML = '';
+  SECTIONS.forEach((s, i) => {
+    const box = document.createElement('div');
+    box.className = 'thumb' + (i===idx ? ' on' : '');
+    box.onclick = () => openSection(i);
+    const img = document.createElement('img');
+    setThumbSrc(img, s);
+    const lbl = document.createElement('label');
+    lbl.textContent = s.replace('TC-','');
+    box.appendChild(img);
+    box.appendChild(lbl);
+    strip.appendChild(box);
+  });
+}
+
+function buildGrid(){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  SECTIONS.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'gcard';
+    card.onclick = () => {
+      showViewer();
+      openSection(i);
+    };
+    const img = document.createElement('img');
+    setThumbSrc(img, s);
+    const foot = document.createElement('div');
+    foot.className = 'gfoot';
+    foot.innerHTML = `<span class="id">${s.replace('TC-','')}</span><span class="n">#${i+1}</span>`;
+    card.appendChild(img);
+    card.appendChild(foot);
+    grid.appendChild(card);
+  });
+}
+
+function showViewer(){
+  document.getElementById('viewerPanel').classList.remove('hide');
+  document.getElementById('gridPanel').classList.add('hide');
+  document.getElementById('nav-viewer').classList.add('on');
+  document.getElementById('nav-grid').classList.remove('on');
+}
+function showGrid(){
+  document.getElementById('gridPanel').classList.remove('hide');
+  document.getElementById('viewerPanel').classList.add('hide');
+  document.getElementById('nav-grid').classList.add('on');
+  document.getElementById('nav-viewer').classList.remove('on');
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.display = 'none', 2200);
+}
+
+function copyLink(){
+  const url = new URL(window.location.href);
+  url.searchParams.set('section', SECTIONS[idx]);
+  navigator.clipboard.writeText(url.toString());
+  toast('Copied section link');
+}
+
+function initialIndexFromURL(){
+  const p = new URLSearchParams(window.location.search).get('section');
+  const i = SECTIONS.indexOf(p);
+  return i >= 0 ? i : 0;
+}
+
+document.getElementById('prevBtn').onclick = () => openSection(idx - 1);
+document.getElementById('nextBtn').onclick = () => openSection(idx + 1);
+document.getElementById('copyBtn').onclick = copyLink;
+document.getElementById('fitBtn').onclick = () => viewer && viewer.viewport && viewer.viewport.goHome();
+document.getElementById('nav-viewer').onclick = showViewer;
+document.getElementById('nav-grid').onclick = showGrid;
+
+document.addEventListener('keydown', (e) => {
+  if(document.getElementById('viewerPanel').classList.contains('hide')) return;
+  if(e.key === 'ArrowRight') openSection(idx + 1);
+  if(e.key === 'ArrowLeft') openSection(idx - 1);
+  if(e.key.toLowerCase() === 'g') showGrid();
+  if(e.key.toLowerCase() === 'v') showViewer();
+});
+
+window.addEventListener('load', async () => {
+  initViewer();
+  buildStrip();
+  buildGrid();
+  idx = initialIndexFromURL();
+  await openSection(idx, false);
+});
 </script>
-
-
 </body>
 </html>
