@@ -214,7 +214,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div>
         <div class="ptitle">Htr2a · <em>5-HT2A-EGFP-CT</em></div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:3px">
-          2ACxAi9 TAMII-1 · 31 coronal sections · GFP channel · Full resolution · Rostral→Caudal
+          2ACxAi9 TAMII-1 · 38 coronal sections · GFP channel · Full resolution · Rostral→Caudal
         </div>
       </div>
       <div class="uchip"><div class="uav" id="uav">?</div><span id="uname">—</span></div>
@@ -222,7 +222,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
 
     <div class="stats-row">
-      <div class="stat"><div class="stat-n" style="color:var(--gfp)">31</div><div class="stat-l">Sections</div></div>
+      <div class="stat"><div class="stat-n" style="color:var(--gfp)">38</div><div class="stat-l">Sections</div></div>
       <div class="stat"><div class="stat-n" style="color:var(--gfp)">GFP</div><div class="stat-l">Channel</div></div>
       <div class="stat"><div class="stat-n">1</div><div class="stat-l">Mouse</div></div>
       <div class="stat"><div class="stat-n" style="color:var(--grn)">Full res</div><div class="stat-l">VS120 export</div></div>
@@ -235,7 +235,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
           <div class="panel-title">Whole Brain Coronal Series — GFP Channel</div>
           <div class="panel-sub">Click any section to open viewer · ◀ ▶ keys to navigate · Scroll wheel to zoom</div>
         </div>
-        <div class="panel-badge">31 sections · 5-HT2A-EGFP-CT · Rostral→Caudal</div>
+        <div class="panel-badge">38 sections · 5-HT2A-EGFP-CT · Rostral→Caudal</div>
       </div>
       <div class="bax"><span class="bax-lbl">Rostral</span><div class="bax-bar"></div><span class="bax-lbl">Caudal</span></div>
       <div class="sec-grid" id="sec-grid"></div>
@@ -269,10 +269,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
           </div>
           <div class="info-cell"><div class="ic-lbl">Scanner</div><div class="ic-val">Olympus VS120 · .VSI format</div></div>
           <div class="info-cell"><div class="ic-lbl">Images</div><div class="ic-val">Full resolution · Original export</div></div>
-          <div class="info-cell"><div class="ic-lbl">Sections</div><div class="ic-val">31 coronal · Rostral→Caudal</div></div>
+          <div class="info-cell"><div class="ic-lbl">Sections</div><div class="ic-val">38 coronal · Rostral→Caudal</div></div>
           <div class="info-cell wide">
             <div class="ic-lbl">Section IDs</div>
-            <div class="ic-val" style="color:var(--txt2);font-size:10px">TC-1_01→TC-1_10 · TC-2_02→TC-2_09 · TC-3_02→TC-3_09 · TC-4_02→TC-4_06</div>
+            <div class="ic-val" style="color:var(--txt2);font-size:10px">TC-1_01→TC-1_10 · TC-2_02→TC-2_09 · TC-3_02→TC-3_09 · TC-4_02→TC-4_09 · TC-5_02, TC-5_03, TC-5_09, TC-5_10</div>
           </div>
         </div>
         <div id="info-linkarea" style="margin-top:14px"></div>
@@ -291,7 +291,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="vm-nav">
         <button class="vm-navbtn" onclick="navSec(-1)">◀</button>
-        <div class="vm-count" id="vm-count">1 / 31</div>
+        <div class="vm-count" id="vm-count">1 / 38</div>
         <button class="vm-navbtn" onclick="navSec(1)">▶</button>
         <button class="vm-close" onclick="closeModal()">✕</button>
       </div>
@@ -381,7 +381,9 @@ const SECTIONS = [
   'TC-2_07','TC-2_08','TC-2_09',
   'TC-3_02','TC-3_03','TC-3_04','TC-3_05','TC-3_06',
   'TC-3_07','TC-3_08','TC-3_09',
-  'TC-4_02','TC-4_03','TC-4_04','TC-4_05','TC-4_06'
+  'TC-4_02','TC-4_03','TC-4_04','TC-4_05','TC-4_06',
+  'TC-4_07','TC-4_08','TC-4_09',
+  'TC-5_02','TC-5_03','TC-5_09','TC-5_10'
 ];
 const N = SECTIONS.length;
 
