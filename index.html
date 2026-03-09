@@ -49,24 +49,42 @@ a{color:inherit}
 .cardsub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:3px}
 .badge{margin-left:auto;background:rgba(62,207,142,.08);border:1px solid rgba(62,207,142,.15);color:var(--grn);font-family:'JetBrains Mono',monospace;font-size:9px;border-radius:6px;padding:4px 10px}
 .viewerwrap{position:relative;height:72vh;background:#000}
+#viewer-shell{
+  position:absolute; inset:0;
+  filter: brightness(var(--master-brightness,1));
+}
+#viewer-filter{
+  position:absolute; inset:0;
+  filter: brightness(var(--image-brightness,1)) contrast(var(--image-contrast,1));
+}
 #viewer{width:100%;height:100%}
 .overlay{
-  position:absolute;left:12px;top:12px;display:flex;gap:8px;align-items:center;z-index:10;pointer-events:none
+  position:absolute;left:12px;top:16px;display:flex;gap:8px;align-items:center;z-index:25;pointer-events:none
 }
-.chip{font-family:'JetBrains Mono',monospace;font-size:8px;padding:4px 9px;border-radius:5px;background:rgba(12,15,21,.82);border:1px solid var(--bdr2);color:var(--gfp);backdrop-filter:blur(4px)}
-.overlay-right{position:absolute;right:12px;top:12px;z-index:10;display:flex;gap:6px;flex-wrap:wrap}
+.overlay-right{position:absolute;right:12px;top:16px;z-index:25;display:flex;gap:6px;flex-wrap:wrap}
+.overlay-bottom-left{position:absolute;left:12px;bottom:12px;z-index:25;display:flex;gap:8px;pointer-events:none}
+.chip{font-family:'JetBrains Mono',monospace;font-size:8px;padding:4px 9px;border-radius:7px;background:rgba(12,15,21,.82);border:1px solid var(--bdr2);color:var(--gfp);backdrop-filter:blur(4px)}
+.chip.muted{color:var(--txt2)}
 .btn{
   background:rgba(12,15,21,.88);border:1px solid var(--bdr2);color:var(--txt2);border-radius:8px;padding:8px 10px;
   font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:.15s
 }
 .btn:hover{border-color:var(--gfp);color:var(--gfp)}
 .btn.warn:hover{border-color:var(--warn);color:var(--warn)}
-.osd-nav{box-shadow:none !important}
+.openseadragon-container, .openseadragon-canvas { background:#000 !important; }
+.openseadragon-container .openseadragon-canvas { outline:none; }
+.openseadragon-container .navigator{border:1px solid rgba(255,255,255,.18)!important;background:rgba(0,0,0,.18)!important}
 .panel{padding:14px}
 .kv{display:grid;grid-template-columns:110px 1fr;gap:8px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7}
 .kv .k{color:var(--txt3)}
 .kv .v{color:var(--txt)}
 .note{margin-top:12px;background:rgba(62,207,142,.04);border:1px solid rgba(62,207,142,.12);border-radius:10px;padding:12px 13px;font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.7;color:var(--txt2)}
+.ctrlblock{margin-top:12px;border-top:1px solid var(--bdr);padding-top:12px}
+.ctrltitle{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.12em;color:var(--txt3);text-transform:uppercase;margin-bottom:10px}
+.sliderrow{margin-bottom:12px}
+.sliderrow label{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);margin-bottom:6px}
+.sliderrow input[type="range"]{width:100%}
+.tiny{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3)}
 .stripcard{margin-top:14px}
 .striphdr{padding:10px 14px 0;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--txt3);text-transform:uppercase}
 .strip{display:flex;gap:5px;overflow-x:auto;padding:10px 14px 14px}
@@ -137,12 +155,16 @@ a{color:inherit}
           <div class="cardhdr">
             <div>
               <div class="cardtitle" id="sectionTitle">Section 1 / 38 · TC-1_01</div>
-              <div class="cardsub">Mouse wheel to zoom · drag to pan · arrow keys to switch sections</div>
+              <div class="cardsub">Mouse wheel to zoom · drag to pan · arrow keys to switch sections · Shift + wheel to scroll sections</div>
             </div>
             <div class="badge" id="modeBadge">Detecting tile source…</div>
           </div>
           <div class="viewerwrap">
-            <div id="viewer"></div>
+            <div id="viewer-shell">
+              <div id="viewer-filter">
+                <div id="viewer"></div>
+              </div>
+            </div>
             <div class="overlay">
               <div class="chip">GFP · 5-HT2A-EGFP-CT</div>
               <div class="chip" id="shareChip">section=TC-1_01</div>
@@ -152,6 +174,10 @@ a{color:inherit}
               <button class="btn" id="nextBtn">Next ▶</button>
               <button class="btn" id="copyBtn">Copy link</button>
               <button class="btn warn" id="fitBtn">Fit view</button>
+            </div>
+            <div class="overlay-bottom-left">
+              <div class="chip muted" id="mouseXY">x: --  y: --</div>
+              <div class="chip muted" id="zoomChip">zoom: --</div>
             </div>
           </div>
         </div>
@@ -174,11 +200,32 @@ a{color:inherit}
               <div class="k">Preferred source</div><div class="v" id="metaSource">Tiles/&lt;section&gt;.dzi</div>
               <div class="k">Fallback source</div><div class="v">Images/full/&lt;section&gt;.jpg</div>
             </div>
+
+            <div class="ctrlblock">
+              <div class="ctrltitle">Display controls</div>
+
+              <div class="sliderrow">
+                <label><span>Master brightness</span><span id="masterVal" class="tiny">100%</span></label>
+                <input id="masterSlider" type="range" min="60" max="160" value="100">
+              </div>
+
+              <div class="sliderrow">
+                <label><span>Image brightness</span><span id="imageBrightVal" class="tiny">100%</span></label>
+                <input id="imageBrightSlider" type="range" min="60" max="180" value="100">
+              </div>
+
+              <div class="sliderrow">
+                <label><span>Image contrast</span><span id="imageContrastVal" class="tiny">100%</span></label>
+                <input id="imageContrastSlider" type="range" min="60" max="180" value="100">
+              </div>
+
+              <button class="btn" id="resetDisplayBtn">Reset display</button>
+            </div>
+
             <div class="note">
-              For the best Allen Brain Atlas–style performance, generate
-              <b>Tiles/TC-1_01.dzi</b> plus its <b>_files</b> folder for each section.
-              Until those tiles exist, this page still works by loading the matching
-              JPG from <b>Images/full</b>.
+              This viewer tries <b>Tiles/TC-1_01.dzi</b> first, falls back to JPG only if needed,
+              keeps mouse coordinate readout, preserves brightness/contrast controls, and adds
+              Allen-style fast section browsing with <b>Shift + mouse wheel</b>.
             </div>
           </div>
         </div>
@@ -228,41 +275,84 @@ function tilePath(key){ return 'Tiles/' + key + '.dzi'; }
 
 let idx = 0;
 let viewer = null;
+let openingToken = 0;
+let lastWheelSwitch = 0;
 
 function initViewer(){
   viewer = OpenSeadragon({
     id: 'viewer',
     prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/',
     showNavigator: true,
+    showNavigationControl: false,
     navigatorPosition: 'BOTTOM_RIGHT',
     navigatorAutoResize: true,
     visibilityRatio: 1,
     constrainDuringPan: true,
-    zoomPerScroll: 1.2,
-    maxZoomPixelRatio: 4,
+    zoomPerScroll: 1.15,
+    maxZoomPixelRatio: 6,
     minZoomLevel: 0.7,
-    animationTime: 0.8,
-    blendTime: 0.12,
+    animationTime: 0.55,
+    blendTime: 0.08,
+    springStiffness: 9.5,
+    maxImageCacheCount: 800,
+    imageLoaderLimit: 8,
+    timeout: 15000,
+    preload: true,
+    immediateRender: false,
     gestureSettingsTouch: { pinchToZoom:true, flickEnabled:true, clickToZoom:false, dblClickToZoom:true },
     gestureSettingsMouse: { clickToZoom:false, dblClickToZoom:true, scrollToZoom:true }
   });
+
+  viewer.addHandler('canvas-drag', updateMouseInfo);
+  viewer.addHandler('canvas-scroll', updateMouseInfo);
+  viewer.addHandler('animation', updateMouseInfo);
+  viewer.addHandler('open', updateMouseInfo);
+  viewer.addHandler('canvas-enter', updateMouseInfo);
+  viewer.addHandler('canvas-exit', () => {
+    document.getElementById('mouseXY').textContent = 'x: --  y: --';
+  });
+  viewer.addHandler('canvas-move', function(event){
+    updateMouseInfo(event);
+  });
+
+  const shell = document.getElementById('viewer-shell');
+  shell.addEventListener('wheel', handleSectionWheel, { passive: false });
 }
 
-async function sourceFor(section){
-  const dzi = tilePath(section);
-  try{
-    const r = await fetch(dzi, { method:'HEAD' });
-    if(r.ok){
-      return { type:'dzi', source:dzi, mode:'DZI tiles' };
-    }
-  }catch(e){}
-  // fallback order: full, legacy
-  return {
-    type:'image',
-    source: fullPath(section),
-    fallback: legacyPath(section),
-    mode:'JPG fallback'
-  };
+function handleSectionWheel(event){
+  if(!event.shiftKey) return;
+  event.preventDefault();
+
+  const now = Date.now();
+  if(now - lastWheelSwitch < 180) return;
+  lastWheelSwitch = now;
+
+  if(event.deltaY > 0){
+    openSection(idx + 1);
+  }else if(event.deltaY < 0){
+    openSection(idx - 1);
+  }
+}
+
+function updateDisplayFilters(){
+  const master = Number(document.getElementById('masterSlider').value) / 100;
+  const bright = Number(document.getElementById('imageBrightSlider').value) / 100;
+  const contrast = Number(document.getElementById('imageContrastSlider').value) / 100;
+
+  document.documentElement.style.setProperty('--master-brightness', master);
+  document.documentElement.style.setProperty('--image-brightness', bright);
+  document.documentElement.style.setProperty('--image-contrast', contrast);
+
+  document.getElementById('masterVal').textContent = `${Math.round(master * 100)}%`;
+  document.getElementById('imageBrightVal').textContent = `${Math.round(bright * 100)}%`;
+  document.getElementById('imageContrastVal').textContent = `${Math.round(contrast * 100)}%`;
+}
+
+function resetDisplayFilters(){
+  document.getElementById('masterSlider').value = 100;
+  document.getElementById('imageBrightSlider').value = 100;
+  document.getElementById('imageContrastSlider').value = 100;
+  updateDisplayFilters();
 }
 
 function setThumbSrc(img, section){
@@ -280,35 +370,89 @@ function setThumbSrc(img, section){
   };
 }
 
-async function openSection(i, updateUrl=true){
-  idx = Math.max(0, Math.min(SECTIONS.length-1, i));
-  const section = SECTIONS[idx];
-  const found = await sourceFor(section);
-
+function updateMeta(section, mode, sourceText){
   document.getElementById('sectionTitle').textContent = `Section ${idx+1} / ${SECTIONS.length} · ${section}`;
   document.getElementById('metaSection').textContent = section;
   document.getElementById('metaIndex').textContent = `${idx+1} / ${SECTIONS.length}`;
   document.getElementById('shareChip').textContent = `section=${section}`;
-  document.getElementById('modeBadge').textContent = found.mode;
-  document.getElementById('modeStat').textContent = found.mode.includes('DZI') ? 'DZI' : 'JPG';
-  document.getElementById('metaSource').textContent = found.mode.includes('DZI') ? tilePath(section) : fullPath(section);
+  document.getElementById('modeBadge').textContent = mode;
+  document.getElementById('modeStat').textContent = mode.includes('DZI') ? 'DZI' : 'JPG';
+  document.getElementById('metaSource').textContent = sourceText;
+}
 
-  if(found.type === 'dzi'){
-    viewer.open(found.source);
-  } else {
-    viewer.open({
-      type: 'image',
-      url: found.source,
-      buildPyramid: false
+function clearViewerHandlers(){
+  viewer.removeAllHandlers('open-failed');
+}
+
+function openWithFallback(section, token){
+  const dzi = tilePath(section);
+  const jpg = fullPath(section);
+  const legacy = legacyPath(section);
+
+  clearViewerHandlers();
+  updateMeta(section, 'Trying DZI…', dzi);
+
+  const onTileFail = () => {
+    if (token !== openingToken) return;
+    clearViewerHandlers();
+    updateMeta(section, 'JPG fallback', jpg);
+
+    viewer.addOnceHandler('open-failed', () => {
+      if (token !== openingToken) return;
+      updateMeta(section, 'Legacy JPG', legacy);
+      viewer.open({ type:'image', url: legacy, buildPyramid: false });
     });
-    // fallback if Images/full is missing
-    viewer.addOnceHandler('open-failed', function(){
-      viewer.open({ type:'image', url: found.fallback, buildPyramid:false });
-      document.getElementById('modeBadge').textContent = 'Legacy JPG';
-      document.getElementById('modeStat').textContent = 'Legacy';
-      document.getElementById('metaSource').textContent = found.fallback;
-    });
+
+    viewer.open({ type:'image', url: jpg, buildPyramid: false });
+  };
+
+  viewer.addOnceHandler('open', () => {
+    if (token !== openingToken) return;
+    clearViewerHandlers();
+    updateMeta(section, 'DZI tiles', dzi);
+    updateMouseInfo();
+  });
+
+  viewer.addOnceHandler('open-failed', onTileFail);
+  viewer.open({ type:'dzi', url: dzi });
+}
+
+function preloadNeighbors(i){
+  const neighbors = [i - 1, i + 1].filter(n => n >= 0 && n < SECTIONS.length);
+  neighbors.forEach(n => {
+    const img = new Image();
+    img.src = thumbPath(SECTIONS[n]);
+  });
+}
+
+function updateMouseInfo(event){
+  if(!viewer || !viewer.viewport || !viewer.world || viewer.world.getItemCount() === 0){
+    return;
   }
+
+  const zoom = viewer.viewport.getZoom(true);
+  document.getElementById('zoomChip').textContent = `zoom: ${zoom.toFixed(2)}x`;
+
+  if(!event || !event.position){
+    return;
+  }
+
+  const point = viewer.viewport.pointFromPixel(event.position);
+  const imagePoint = viewer.viewport.viewportToImageCoordinates(point);
+  if(Number.isFinite(imagePoint.x) && Number.isFinite(imagePoint.y)){
+    document.getElementById('mouseXY').textContent =
+      `x: ${Math.round(imagePoint.x)}  y: ${Math.round(imagePoint.y)}`;
+  }
+}
+
+function openSection(i, updateUrl=true){
+  idx = Math.max(0, Math.min(SECTIONS.length-1, i));
+  const section = SECTIONS[idx];
+  openingToken += 1;
+  const token = openingToken;
+
+  openWithFallback(section, token);
+  preloadNeighbors(idx);
 
   document.querySelectorAll('.thumb').forEach((el, j) => el.classList.toggle('on', j===idx));
   if(updateUrl){
@@ -396,6 +540,10 @@ document.getElementById('copyBtn').onclick = copyLink;
 document.getElementById('fitBtn').onclick = () => viewer && viewer.viewport && viewer.viewport.goHome();
 document.getElementById('nav-viewer').onclick = showViewer;
 document.getElementById('nav-grid').onclick = showGrid;
+document.getElementById('masterSlider').oninput = updateDisplayFilters;
+document.getElementById('imageBrightSlider').oninput = updateDisplayFilters;
+document.getElementById('imageContrastSlider').oninput = updateDisplayFilters;
+document.getElementById('resetDisplayBtn').onclick = resetDisplayFilters;
 
 document.addEventListener('keydown', (e) => {
   if(document.getElementById('viewerPanel').classList.contains('hide')) return;
@@ -405,12 +553,13 @@ document.addEventListener('keydown', (e) => {
   if(e.key.toLowerCase() === 'v') showViewer();
 });
 
-window.addEventListener('load', async () => {
+window.addEventListener('load', () => {
   initViewer();
   buildStrip();
   buildGrid();
+  resetDisplayFilters();
   idx = initialIndexFromURL();
-  await openSection(idx, false);
+  openSection(idx, false);
 });
 </script>
 </body>
