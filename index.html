@@ -10,135 +10,137 @@
 :root{
   --bg:#07090c; --surf:#0c0f15; --surf2:#12161e; --bdr:#1a1f2c; --bdr2:#222a3a;
   --txt:#dde2ec; --txt2:#8a95af; --txt3:#556178;
-  --grn:#55CF1A; --gfp:#55CF1A; --red:#e05555; --warn:#bf4567;
+  --gfp:#55CF1A; --red:#e05555; --merge:#d4a0d4; --side:#95AAD3; --warn:#bf4567;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(85,207,26,.05),transparent);pointer-events:none}
 a{color:inherit;text-decoration:none}
-.app{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:220px 1fr}
-
-/* ── SIDEBAR ── */
+.app{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:300px 1fr}
 .sidebar{background:var(--surf);border-right:1px solid var(--bdr);padding:18px 0;display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh;overflow-y:auto}
 .logo{padding:0 16px 16px;border-bottom:1px solid var(--bdr)}
-.brand a{display:flex;align-items:center;gap:8px;text-decoration:none}
+.brand a{display:flex;align-items:center;gap:8px}
 .pulse{width:8px;height:8px;border-radius:50%;background:var(--gfp);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.55)}}
-.atlas-name{color:var(--gfp);font-size:13px;font-weight:700}
-.subline{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--gfp);margin-top:4px}
-.monoline{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt3);margin-top:2px}
-.ssec{padding:14px 16px 5px;font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3)}
-.sitem{margin:0 7px 1px;padding:8px 10px;border-radius:8px;color:var(--txt2);cursor:pointer;font-size:12px;border:1px solid transparent;transition:.15s}
+.atlas-name{color:var(--gfp);font-size:18px;font-weight:700}
+.subline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gfp);margin-top:6px}
+.monoline{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);margin-top:3px}
+.ssec{padding:18px 16px 8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3)}
+.sitem{margin:0 7px 3px;padding:12px 14px;border-radius:12px;color:var(--txt2);cursor:pointer;font-size:15px;border:1px solid transparent;transition:.15s}
 .sitem:hover{background:var(--surf2);color:var(--txt)}
 .sitem.on{background:rgba(85,207,26,.08);color:var(--gfp);border-color:rgba(85,207,26,.2)}
-.sitem-info{margin:0 7px 1px;padding:6px 10px;border-radius:8px;color:var(--txt3);font-size:11px;font-family:'JetBrains Mono',monospace;cursor:default;line-height:1.6}
+.sitem-info{margin:0 7px 3px;padding:8px 14px;border-radius:8px;color:var(--txt3);font-size:13px;font-family:'JetBrains Mono',monospace;line-height:1.65}
 .sitem-info span{color:var(--txt2)}
 .spacer{flex:1}
-.back-link{margin:0 7px 8px;padding:8px 10px;border-radius:8px;color:var(--txt3);font-size:11px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:6px;border:1px solid var(--bdr);cursor:pointer;transition:.15s;text-decoration:none}
+.back-link{margin:0 7px 8px;padding:12px 14px;border-radius:12px;color:var(--txt3);font-size:13px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:6px;border:1px solid var(--bdr);cursor:pointer;transition:.15s}
 .back-link:hover{border-color:var(--gfp);color:var(--gfp)}
 
-/* ── MAIN ── */
 .main{padding:22px 26px 20px;min-width:0}
 .topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
-.title{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.title{font-size:30px;font-weight:700;letter-spacing:-.02em}
 .title em{font-style:normal;color:var(--gfp)}
+.subtitle{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--txt3);margin-top:6px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.stat{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:12px 16px;min-width:115px}
+.stat .n{font-size:20px;font-weight:700}
+.stat .l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
 
-.subtitle{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--txt3);margin-top:4px}
-
-/* ── STATS ── */
-.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.stat{background:var(--surf);border:1px solid var(--bdr);border-radius:11px;padding:10px 14px;min-width:100px}
-.stat .n{font-size:18px;font-weight:700}
-.stat .l{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-
-/* ── CHANNEL MODE SWITCHER ── */
-.channel-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.channel-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .ch-btn{
-  font-family:'JetBrains Mono',monospace;font-size:10px;padding:7px 14px;
-  border-radius:8px;border:1px solid var(--bdr2);background:var(--surf);
-  color:var(--txt2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px
+  font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 14px;
+  border-radius:9px;border:1px solid var(--bdr2);background:var(--surf);
+  color:var(--txt2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:7px
 }
 .ch-btn:hover{border-color:var(--txt3);color:var(--txt)}
 .ch-btn.active-gfp{background:rgba(85,207,26,.1);border-color:rgba(85,207,26,.3);color:var(--gfp)}
 .ch-btn.active-red{background:rgba(224,85,85,.1);border-color:rgba(224,85,85,.3);color:var(--red)}
-.ch-btn.active-merge{background:rgba(200,150,200,.1);border-color:rgba(200,150,200,.3);color:#d4a0d4}
-.ch-btn.active-side{background:rgba(149,170,211,.1);border-color:rgba(149,170,211,.3);color:#95AAD3}
-.ch-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ch-btn.active-merge{background:rgba(212,160,212,.1);border-color:rgba(212,160,212,.3);color:var(--merge)}
+.ch-btn.active-side{background:rgba(149,170,211,.1);border-color:rgba(149,170,211,.3);color:var(--side)}
+.ch-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 
-/* ── VIEWER LAYOUT ── */
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:12px}
-.card{background:var(--surf);border:1px solid var(--bdr2);border-radius:14px;overflow:hidden}
-.cardhdr{padding:12px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.cardtitle{font-size:13px;font-weight:700}
-.cardsub{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);margin-top:2px}
-.badge{margin-left:auto;background:rgba(85,207,26,.08);border:1px solid rgba(85,207,26,.15);color:var(--gfp);font-family:'JetBrains Mono',monospace;font-size:8px;border-radius:5px;padding:3px 9px;white-space:nowrap}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px}
+.card{background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;overflow:hidden}
+.cardhdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cardtitle{font-size:14px;font-weight:700}
+.cardsub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:3px}
+.badge{margin-left:auto;background:rgba(85,207,26,.08);border:1px solid rgba(85,207,26,.15);color:var(--gfp);font-family:'JetBrains Mono',monospace;font-size:9px;border-radius:6px;padding:4px 10px;white-space:nowrap}
 
-/* ── SINGLE VIEWER ── */
-.viewerwrap{position:relative;height:65vh;background:#000}
-#viewer{width:100%;height:100%}
-
-/* ── SIDE BY SIDE ── */
-.side-wrap{display:none;height:65vh;gap:4px}
-.side-wrap.active{display:grid;grid-template-columns:1fr 1fr}
-.side-panel{position:relative;background:#000;overflow:hidden}
-.side-label{position:absolute;top:8px;left:8px;z-index:10;font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 9px;border-radius:4px;background:rgba(12,15,21,.85);border:1px solid var(--bdr2);backdrop-filter:blur(4px)}
-#viewer-gfp-side, #viewer-red-side{width:100%;height:100%}
-
-.overlay{position:absolute;left:10px;top:10px;display:flex;gap:6px;align-items:center;z-index:10;pointer-events:none}
-.chip{font-family:'JetBrains Mono',monospace;font-size:7.5px;padding:3px 8px;border-radius:4px;background:rgba(12,15,21,.85);border:1px solid var(--bdr2);color:var(--gfp);backdrop-filter:blur(4px)}
+.viewerwrap,.side-wrap{position:relative;height:68vh;background:#000}
+#single-wrap{display:block}
+#side-wrap{display:none}
+#viewer-main,#viewer-overlay,#viewer-gfp-side,#viewer-red-side{width:100%;height:100%}
+#merge-stack{position:absolute;inset:0}
+#viewer-main-wrap{position:absolute;inset:0}
+#viewer-overlay-wrap{
+  position:absolute;inset:0;pointer-events:none;
+  mix-blend-mode:screen;opacity:1;
+}
+.side-wrap.active{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.side-panel{position:relative;background:#000}
+.side-label{position:absolute;top:8px;left:8px;z-index:30;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;background:rgba(12,15,21,.85);border:1px solid var(--bdr2)}
+.overlay{position:absolute;left:10px;top:10px;display:flex;gap:6px;align-items:center;z-index:40;pointer-events:none;flex-wrap:wrap}
+.overlay-right{position:absolute;right:10px;top:10px;z-index:40;display:flex;gap:6px;flex-wrap:wrap}
+.overlay-bottom-left{position:absolute;left:10px;bottom:10px;z-index:40;display:flex;gap:6px;pointer-events:none;flex-wrap:wrap}
+.chip{font-family:'JetBrains Mono',monospace;font-size:8px;padding:4px 9px;border-radius:6px;background:rgba(12,15,21,.85);border:1px solid var(--bdr2);backdrop-filter:blur(4px);color:var(--gfp)}
 .chip.red{color:var(--red)}
-.coords{font-family:'JetBrains Mono',monospace;font-size:7.5px;padding:3px 8px;border-radius:4px;background:rgba(12,15,21,.85);border:1px solid var(--bdr2);color:var(--txt3);backdrop-filter:blur(4px)}
-.overlay-right{position:absolute;right:10px;top:10px;z-index:10;display:flex;gap:5px;flex-wrap:wrap}
-.btn{background:rgba(12,15,21,.88);border:1px solid var(--bdr2);color:var(--txt2);border-radius:7px;padding:7px 9px;font-family:'JetBrains Mono',monospace;font-size:9px;cursor:pointer;transition:.15s}
+.chip.merge{color:var(--merge)}
+.chip.side{color:var(--side)}
+.chip.muted{color:var(--txt2)}
+.btn{background:rgba(12,15,21,.88);border:1px solid var(--bdr2);color:var(--txt2);border-radius:8px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:.15s}
 .btn:hover{border-color:var(--gfp);color:var(--gfp)}
 .btn.warn:hover{border-color:var(--warn);color:var(--warn)}
+.openseadragon-container,.openseadragon-canvas{background:#000 !important}
+.openseadragon-container .navigator{border:1px solid rgba(255,255,255,.18)!important;background:rgba(0,0,0,.18)!important}
 
-/* ── METADATA PANEL ── */
-.panel{padding:12px}
-.kv{display:grid;grid-template-columns:100px 1fr;gap:6px 8px;font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.7}
+.panel{padding:14px}
+.kv{display:grid;grid-template-columns:100px 1fr;gap:6px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7}
 .kv .k{color:var(--txt3)}
 .kv .v{color:var(--txt)}
-.note{margin-top:10px;background:rgba(85,207,26,.04);border:1px solid rgba(85,207,26,.1);border-radius:9px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:8.5px;line-height:1.7;color:var(--txt2)}
-
-/* ── DISPLAY CONTROLS ── */
 .controls-section{margin-top:12px;border-top:1px solid var(--bdr);padding-top:10px}
-.ctrl-label{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px}
-.ctrl-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.ctrl-row label{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--txt2);width:90px;flex-shrink:0}
-.ctrl-row .val{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--gfp);width:34px;text-align:right;flex-shrink:0}
+.ctrl-label{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px}
+.ctrl-section-label{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);margin:8px 0 4px;letter-spacing:.08em}
+.ctrl-section-label.gfp{color:var(--gfp)}
+.ctrl-section-label.red{color:var(--red)}
+.ctrl-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.ctrl-row label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt2);width:90px;flex-shrink:0}
+.ctrl-row .val{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--gfp);width:38px;text-align:right;flex-shrink:0}
 input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:var(--bdr2);border-radius:2px;outline:none;cursor:pointer}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gfp);cursor:pointer}
 input[type=range].red-slider::-webkit-slider-thumb{background:var(--red)}
 input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--gfp);border:none;cursor:pointer}
-.reset-btn{margin-top:6px;width:100%;background:transparent;border:1px solid var(--bdr2);color:var(--txt3);border-radius:6px;padding:6px;font-family:'JetBrains Mono',monospace;font-size:8px;cursor:pointer;transition:.15s}
+.reset-btn{margin-top:6px;width:100%;background:transparent;border:1px solid var(--bdr2);color:var(--txt3);border-radius:6px;padding:7px;font-family:'JetBrains Mono',monospace;font-size:8px;cursor:pointer;transition:.15s}
 .reset-btn:hover{border-color:var(--txt3);color:var(--txt)}
-.ctrl-section-label{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--txt3);margin:8px 0 4px;letter-spacing:.08em}
-.ctrl-section-label.gfp{color:var(--gfp)}
-.ctrl-section-label.red{color:var(--red)}
+.note{margin-top:10px;background:rgba(85,207,26,.04);border:1px solid rgba(85,207,26,.1);border-radius:9px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:8.5px;line-height:1.7;color:var(--txt2)}
 
-/* ── STRIP ── */
 .stripcard{margin-top:12px}
-.striphdr{padding:8px 12px 0;font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.1em;color:var(--txt3);text-transform:uppercase}
+.striphdr{padding:8px 12px 0;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--txt3);text-transform:uppercase}
 .strip{display:flex;gap:5px;overflow-x:auto;padding:8px 12px 12px}
-
- 
-.strip::-webkit-scrollbar{height:4px}.strip::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
-.thumb{flex:0 0 auto;width:70px;border-radius:7px;overflow:hidden;border:2px solid var(--bdr);background:#000;cursor:pointer;transition:.15s}
+.strip::-webkit-scrollbar{height:4px}
+.strip::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
+.thumb{flex:0 0 auto;width:84px;border-radius:7px;overflow:hidden;border:2px solid var(--bdr);background:#000;cursor:pointer;transition:.15s}
 .thumb:hover{border-color:var(--txt3)}
 .thumb.on{border-color:var(--gfp)}
-.thumb img{display:block;width:70px;height:50px;object-fit:contain;background:#000}
-.thumb label{display:block;padding:2px 3px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:6.5px;color:var(--txt3);background:var(--bg);cursor:pointer}
+.thumb-pair{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#000}
+.thumb-pair img{display:block;width:100%;height:56px;object-fit:contain;background:#000}
+.thumb-channels{display:grid;grid-template-columns:1fr 1fr;gap:1px;padding:3px 4px;background:var(--surf2);font-family:'JetBrains Mono',monospace;font-size:7px}
+.thumb-channels span:first-child{color:var(--gfp)}
+.thumb-channels span:last-child{color:var(--red);text-align:right}
+.thumb label{display:block;padding:3px 4px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt3);background:var(--bg);cursor:pointer}
 .thumb.on label{color:var(--gfp)}
 
-/* ── GRID ── */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:9px;padding:12px}
-.gcard{background:var(--surf2);border:1px solid var(--bdr2);border-radius:9px;overflow:hidden;cursor:pointer;transition:.18s}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:12px;padding:12px}
+.gcard{background:var(--surf2);border:1px solid var(--bdr2);border-radius:12px;overflow:hidden;cursor:pointer;transition:.18s}
 .gcard:hover{transform:translateY(-2px);border-color:var(--gfp)}
-.gcard img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#000}
-.gfoot{padding:6px 8px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace}
-.gfoot .id{font-size:8.5px;color:var(--txt2)}.gfoot .n{font-size:7.5px;color:var(--txt3)}
+.grid-pair{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#000}
+.grid-pair img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#000}
+.grid-labels{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:4px 6px;font-family:'JetBrains Mono',monospace;font-size:8px}
+.grid-labels span:first-child{color:var(--gfp)}
+.grid-labels span:last-child{color:var(--red);text-align:right}
+.gfoot{padding:7px 9px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace}
+.gfoot .id{font-size:10px;color:var(--txt2)}
+.gfoot .n{font-size:8px;color:var(--txt3)}
 
-.hide{display:none}
+.hide{display:none!important}
 .toast{position:fixed;right:16px;bottom:16px;background:var(--surf);border:1px solid var(--gfp);border-radius:8px;padding:9px 13px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gfp);display:none;z-index:999}
 
 @media(max-width:980px){
@@ -183,7 +185,6 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
     <div class="ssec">File paths</div>
     <div class="sitem-info">GFP tiles <span style="color:var(--gfp)">Tiles/</span></div>
     <div class="sitem-info">Red tiles <span style="color:var(--red)">Tiles-tdTomato/</span></div>
-
     <a class="back-link" href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/">← Atlas Home</a>
   </aside>
 
@@ -194,7 +195,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
         <div class="subtitle">2ACxAi9 TAMII-1 · 38 coronal sections · Dual channel GFP + tdTomato · Olympus VS120</div>
       </div>
       <a href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/" title="Back to Atlas Home"
-        style="margin-left:auto;display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);background:var(--surf);border:1px solid var(--bdr2);border-radius:8px;padding:7px 12px;text-decoration:none;transition:.15s;white-space:nowrap"
+        style="margin-left:auto;display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);background:var(--surf);border:1px solid var(--bdr2);border-radius:8px;padding:7px 12px;white-space:nowrap"
         onmouseover="this.style.borderColor='var(--gfp)';this.style.color='var(--gfp)'"
         onmouseout="this.style.borderColor='var(--bdr2)';this.style.color='var(--txt3)'">
         🏠 Atlas Home
@@ -205,11 +206,10 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
       <div class="stat"><div class="n" style="color:var(--gfp)">38</div><div class="l">Sections</div></div>
       <div class="stat"><div class="n" style="color:var(--gfp)">GFP</div><div class="l">Ch 1</div></div>
       <div class="stat"><div class="n" style="color:var(--red)">tdTom</div><div class="l">Ch 2</div></div>
-      <div class="stat"><div class="n" id="modeStat" style="color:var(--gfp)">Auto</div><div class="l">Viewer mode</div></div>
+      <div class="stat"><div class="n" id="modeStat" style="color:var(--gfp)">GFP</div><div class="l">Viewer mode</div></div>
     </div>
 
     <section id="viewerPanel" class="hide">
-      <!-- CHANNEL MODE SWITCHER -->
       <div class="channel-bar">
         <button class="ch-btn active-gfp" id="btn-gfp" onclick="setChannel('gfp')">
           <span class="ch-dot" style="background:var(--gfp)"></span> GFP only
@@ -221,32 +221,30 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
           <span class="ch-dot" style="background:linear-gradient(135deg,var(--gfp),var(--red))"></span> Merge
         </button>
         <button class="ch-btn" id="btn-side" onclick="setChannel('side')">
-          <span class="ch-dot" style="background:#95AAD3"></span> Side by side
+          <span class="ch-dot" style="background:var(--side)"></span> Side by side
         </button>
       </div>
 
       <div class="layout">
-        <!-- VIEWER CARD -->
         <div class="card">
           <div class="cardhdr">
             <div>
               <div class="cardtitle" id="sectionTitle">Section 1 / 38 · TC-1_01</div>
-
-              <div class="cardsub">Mouse wheel to zoom · drag to pan · arrow keys to switch · Shift+scroll to browse</div>
-
+              <div class="cardsub">Mouse wheel zoom · drag pan · arrows switch sections · Shift+wheel browse</div>
             </div>
-            <div class="badge" id="modeBadge">Detecting…</div>
+            <div class="badge" id="modeBadge">Loading…</div>
           </div>
 
-
-          <!-- SINGLE VIEWER (GFP / Red / Merge) -->
           <div class="viewerwrap" id="single-wrap">
-            <div id="viewer"></div>
+            <div id="merge-stack">
+              <div id="viewer-main-wrap"><div id="viewer-main"></div></div>
+              <div id="viewer-overlay-wrap" class="hide"><div id="viewer-overlay"></div></div>
+            </div>
 
             <div class="overlay">
               <div class="chip" id="channelChip">GFP · EGFP-CT</div>
-              <div class="chip" id="shareChip">TC-1_01</div>
-              <div class="coords" id="coordChip">x: — y: — zoom: —</div>
+              <div class="chip muted" id="shareChip">TC-1_01</div>
+              <div class="chip muted" id="coordChip">x: -- y: -- zoom: --</div>
             </div>
             <div class="overlay-right">
               <button class="btn" id="prevBtn">◀ Prev</button>
@@ -255,30 +253,28 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
               <button class="btn warn" id="fitBtn">Fit view</button>
             </div>
             <div class="overlay-bottom-left">
-              <div class="chip muted" id="mouseXY">x: --  y: --</div>
+              <div class="chip muted" id="mouseXY">x: -- y: --</div>
               <div class="chip muted" id="zoomChip">zoom: --</div>
             </div>
           </div>
 
-          <!-- SIDE BY SIDE VIEWER -->
           <div class="side-wrap" id="side-wrap">
             <div class="side-panel">
               <div class="side-label" style="color:var(--gfp)">🟢 GFP</div>
-              <div id="viewer-gfp-side" style="width:100%;height:100%"></div>
+              <div id="viewer-gfp-side"></div>
             </div>
             <div class="side-panel">
               <div class="side-label" style="color:var(--red)">🔴 tdTomato</div>
-              <div id="viewer-red-side" style="width:100%;height:100%"></div>
+              <div id="viewer-red-side"></div>
             </div>
           </div>
         </div>
 
-        <!-- METADATA + CONTROLS -->
         <div class="card">
           <div class="cardhdr">
             <div>
               <div class="cardtitle">Section Metadata</div>
-              <div class="cardsub">Dual channel · DZI tiles + JPG fallback</div>
+              <div class="cardsub">Dual channel · DZI preferred · JPG fallback</div>
             </div>
           </div>
           <div class="panel">
@@ -307,7 +303,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
                 <span class="val" id="gfpContrastVal">100%</span>
               </div>
 
-              <div class="ctrl-section-label red" style="margin-top:8px">── tdTomato channel</div>
+              <div class="ctrl-section-label red">── tdTomato channel</div>
               <div class="ctrl-row">
                 <label>Brightness</label>
                 <input type="range" class="red-slider" id="redBright" min="0" max="300" value="100">
@@ -323,29 +319,26 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
             </div>
 
             <div class="note">
-              Switch channels using the buttons above the viewer. <b>Merge</b> overlays both channels. <b>Side by side</b> shows them simultaneously with synchronized zoom.
-
+              Grid thumbnails stay <b>side-by-side</b>. The viewer supports <b>GFP</b>, <b>tdTomato</b>, <b>Merge</b>, and <b>Side by side</b>. Merge uses synchronized GFP + tdTomato overlays; side-by-side uses synchronized zoom.
             </div>
           </div>
         </div>
       </div>
 
-      <!-- THUMBNAIL STRIP -->
       <div class="card stripcard">
         <div class="striphdr">All 38 sections — click to navigate · Shift+scroll to browse</div>
         <div class="strip" id="strip"></div>
       </div>
     </section>
 
-    <!-- GRID PANEL -->
     <section id="gridPanel">
       <div class="card">
         <div class="cardhdr">
           <div>
             <div class="cardtitle">Whole Brain Coronal Series · Htr2a-EGFP-CT-IRES-CreERT2</div>
-            <div class="cardsub">38 sections · click any to open in viewer</div>
+            <div class="cardsub">38 sections · side-by-side channel thumbnails · click any to open</div>
           </div>
-          <div class="badge">Images/thumbs</div>
+          <div class="badge">GFP | tdTomato</div>
         </div>
         <div class="grid" id="grid"></div>
       </div>
@@ -367,226 +360,286 @@ const SECTIONS = [
   'TC-5_02','TC-5_03','TC-5_09','TC-5_10'
 ];
 
-// ── PATHS ────────────────────────────────────────────────────
-const thumbPath   = k => `Images/thumbs/${k}.jpg`;
-const redThumbPath= k => `Images_tdTomato/Thumbs/${k}.jpg`;
-const gfpFull     = k => `Images/full/${k}.jpg`;
-const redFull     = k => `Images_tdTomato/full/${k}.jpg`;
-const gfpTile     = k => `Tiles/${k}.dzi`;
-const redTile     = k => `Images_tdTomato/Tiles/${k}.dzi`;
+const thumbPath = k => `Images/thumbs/${k}.jpg`;
+const redThumbPath = k => `Images_tdTomato/Thumbs/${k}.jpg`;
+const gfpFull = k => `Images/full/${k}.jpg`;
+const redFull = k => `Images_tdTomato/full/${k}.jpg`;
+const gfpTile = k => `Tiles/${k}.dzi`;
+const redTile = k => `Tiles-tdTomato/${k}.dzi`;
 
 let idx = 0;
-let channelMode = 'gfp'; // gfp | red | merge | side
-let viewer = null;
-
+let channelMode = 'gfp';
+let viewerMain = null;
+let viewerOverlay = null;
 let viewerGfpSide = null;
 let viewerRedSide = null;
+let viewerInitialized = false;
+let lastWheelSwitch = 0;
+let syncingOverlay = false;
+let syncingSide = false;
 
+const commonOpts = {
+  prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/',
+  showNavigator: true,
+  showNavigationControl: false,
+  navigatorPosition: 'BOTTOM_RIGHT',
+  visibilityRatio: 1,
+  constrainDuringPan: true,
+  zoomPerScroll: 1.15,
+  maxZoomPixelRatio: 6,
+  minZoomLevel: 0.7,
+  animationTime: 0.6,
+  blendTime: 0.08,
+  springStiffness: 9.5,
+  gestureSettingsTouch: { pinchToZoom:true, flickEnabled:true, clickToZoom:false, dblClickToZoom:true },
+  gestureSettingsMouse: { clickToZoom:false, dblClickToZoom:true, scrollToZoom:true }
+};
 
-// ── INIT VIEWERS ─────────────────────────────────────────────
-function initViewers(){
-  const commonOpts = {
-    prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/',
-
-    showNavigator: false,
-    visibilityRatio: 1,
-    constrainDuringPan: true,
-    zoomPerScroll: 1.2,
-    maxZoomPixelRatio: 4,
-    minZoomLevel: 0.5,
-    animationTime: 0.8,
-    blendTime: 0.12,
-
-    gestureSettingsTouch: { pinchToZoom:true, flickEnabled:true, clickToZoom:false, dblClickToZoom:true },
-    gestureSettingsMouse: { clickToZoom:false, dblClickToZoom:true, scrollToZoom:true }
-  };
-
-  viewer = OpenSeadragon({ id:'viewer', showNavigator:true, navigatorPosition:'BOTTOM_RIGHT', ...commonOpts });
-
-  viewerGfpSide = OpenSeadragon({ id:'viewer-gfp-side', ...commonOpts });
-  viewerRedSide = OpenSeadragon({ id:'viewer-red-side', ...commonOpts });
-
-  // Sync side-by-side viewers
-  let syncing = false;
-  function syncViewers(source, target){
-    source.addHandler('zoom', () => {
-      if(syncing) return; syncing = true;
-      target.viewport.zoomTo(source.viewport.getZoom(true));
-      syncing = false;
-    });
-    source.addHandler('pan', () => {
-      if(syncing) return; syncing = true;
-      target.viewport.panTo(source.viewport.getCenter(true));
-      syncing = false;
-    });
-  }
-  syncViewers(viewerGfpSide, viewerRedSide);
-  syncViewers(viewerRedSide, viewerGfpSide);
-
-  // Coordinate readout
-  viewer.addHandler('mouse-move', function(e){
-    const vp = viewer.viewport;
-    const wp = vp.pointFromPixel(e.position);
-    const zoom = vp.getZoom(true).toFixed(2);
-    document.getElementById('coordChip').textContent =
-      `x: ${wp.x.toFixed(3)}  y: ${wp.y.toFixed(3)}  zoom: ${zoom}x`;
-  });
-
-  // Shift+scroll to browse sections
-  viewer.addHandler('canvas-scroll', function(e){
-    if(e.originalEvent && e.originalEvent.shiftKey){
-      e.preventDefaultAction = true;
-      openSection(idx + (e.scroll > 0 ? -1 : 1));
-    }
-  });
-
-  viewer.addHandler('canvas-drag', updateMouseInfo);
-  viewer.addHandler('canvas-scroll', updateMouseInfo);
-  viewer.addHandler('animation', updateMouseInfo);
-  viewer.addHandler('open', updateMouseInfo);
-  viewer.addHandler('canvas-enter', updateMouseInfo);
-  viewer.addHandler('canvas-exit', () => {
-    document.getElementById('mouseXY').textContent = 'x: --  y: --';
-  });
-  viewer.addHandler('canvas-move', function(event){
-    updateMouseInfo(event);
-  });
-
-  const shell = document.getElementById('viewer-shell');
-  shell.addEventListener('wheel', handleSectionWheel, { passive: false });
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.display = 'none', 2200);
 }
 
+async function hasTile(path){
+  try{
+    const r = await fetch(path,{method:'HEAD',cache:'no-store'});
+    return r.ok;
+  }catch(e){
+    return false;
+  }
+}
 
-// ── DISPLAY FILTERS ───────────────────────────────────────────
+async function getSource(kind, section){
+  if(kind === 'gfp'){
+    const tile = gfpTile(section);
+    return (await hasTile(tile)) ? {type:'dzi', url:tile, label:'DZI'} : {type:'image', url:gfpFull(section), label:'JPG'};
+  }
+  const tile = redTile(section);
+  return (await hasTile(tile)) ? {type:'dzi', url:tile, label:'DZI'} : {type:'image', url:redFull(section), label:'JPG'};
+}
+
+function openInViewer(viewer, source){
+  if(source.type === 'dzi'){
+    viewer.open(source.url);
+  }else{
+    viewer.open({type:'image', url:source.url, buildPyramid:false});
+  }
+}
+
+function getCanvasEl(viewer){
+  return viewer && viewer.element ? viewer.element.querySelector('.openseadragon-canvas') : null;
+}
+
 function applyFilters(){
   const gb = document.getElementById('gfpBright').value;
   const gc = document.getElementById('gfpContrast').value;
   const rb = document.getElementById('redBright').value;
   const rc = document.getElementById('redContrast').value;
 
-  if(channelMode === 'gfp' || channelMode === 'merge'){
-    document.getElementById('viewer').style.filter = `brightness(${gb}%) contrast(${gc}%)`;
-  } else if(channelMode === 'red'){
-    document.getElementById('viewer').style.filter = `brightness(${rb}%) contrast(${rc}%)`;
-  }
-  document.getElementById('viewer-gfp-side').style.filter = `brightness(${gb}%) contrast(${gc}%)`;
-  document.getElementById('viewer-red-side').style.filter = `brightness(${rb}%) contrast(${rc}%)`;
+  document.getElementById('gfpBrightVal').textContent = gb + '%';
+  document.getElementById('gfpContrastVal').textContent = gc + '%';
+  document.getElementById('redBrightVal').textContent = rb + '%';
+  document.getElementById('redContrastVal').textContent = rc + '%';
 
+  const mainCanvas = getCanvasEl(viewerMain);
+  const overlayCanvas = getCanvasEl(viewerOverlay);
+  const gfpSideCanvas = getCanvasEl(viewerGfpSide);
+  const redSideCanvas = getCanvasEl(viewerRedSide);
+
+  const gfpFilter = `brightness(${gb}%) contrast(${gc}%)`;
+  const redFilter = `brightness(${rb}%) contrast(${rc}%)`;
+
+  if(mainCanvas){
+    mainCanvas.style.filter = channelMode === 'red' ? redFilter : gfpFilter;
+  }
+  if(overlayCanvas){
+    overlayCanvas.style.filter = redFilter;
+  }
+  if(gfpSideCanvas) gfpSideCanvas.style.filter = gfpFilter;
+  if(redSideCanvas) redSideCanvas.style.filter = redFilter;
 }
 
-['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => {
-  document.getElementById(id).addEventListener('input', function(){
-    const valId = id + 'Val';
-    document.getElementById(valId).textContent = this.value + '%';
+function syncOverlayFromMain(){
+  if(syncingOverlay || !viewerMain || !viewerOverlay || viewerMain.world.getItemCount() === 0 || viewerOverlay.world.getItemCount() === 0) return;
+  syncingOverlay = true;
+  viewerOverlay.viewport.zoomTo(viewerMain.viewport.getZoom(true), null, true);
+  viewerOverlay.viewport.panTo(viewerMain.viewport.getCenter(true), true);
+  syncingOverlay = false;
+}
+
+function syncSide(source, target){
+  if(syncingSide || !source || !target || source.world.getItemCount() === 0 || target.world.getItemCount() === 0) return;
+  syncingSide = true;
+  target.viewport.zoomTo(source.viewport.getZoom(true), null, true);
+  target.viewport.panTo(source.viewport.getCenter(true), true);
+  syncingSide = false;
+}
+
+function updateMouseInfo(event){
+  if(!viewerMain || !viewerMain.viewport || viewerMain.world.getItemCount() === 0) return;
+  const zoom = viewerMain.viewport.getZoom(true);
+  document.getElementById('zoomChip').textContent = `zoom: ${zoom.toFixed(2)}x`;
+
+  if(event && event.position){
+    const vp = viewerMain.viewport.pointFromPixel(event.position);
+    if(Number.isFinite(vp.x) && Number.isFinite(vp.y)){
+      document.getElementById('coordChip').textContent = `x: ${vp.x.toFixed(3)} y: ${vp.y.toFixed(3)} zoom: ${zoom.toFixed(2)}x`;
+      const img = viewerMain.viewport.viewportToImageCoordinates(vp);
+      if(Number.isFinite(img.x) && Number.isFinite(img.y)){
+        document.getElementById('mouseXY').textContent = `x: ${Math.round(img.x)}  y: ${Math.round(img.y)}`;
+      }
+    }
+  }
+}
+
+function handleShiftWheel(deltaY){
+  const now = Date.now();
+  if(now - lastWheelSwitch < 180) return;
+  lastWheelSwitch = now;
+  openSection(idx + (deltaY > 0 ? 1 : -1));
+}
+
+function attachMainHandlers(){
+  viewerMain.addHandler('mouse-move', updateMouseInfo);
+  viewerMain.addHandler('canvas-move', updateMouseInfo);
+  viewerMain.addHandler('animation', () => {
+    updateMouseInfo();
+    if(channelMode === 'merge') syncOverlayFromMain();
+  });
+  viewerMain.addHandler('zoom', () => { if(channelMode === 'merge') syncOverlayFromMain(); });
+  viewerMain.addHandler('pan', () => { if(channelMode === 'merge') syncOverlayFromMain(); });
+  viewerMain.addHandler('resize', () => { if(channelMode === 'merge') syncOverlayFromMain(); });
+  viewerMain.addHandler('open', () => {
     applyFilters();
+    updateMouseInfo();
+    if(channelMode === 'merge') setTimeout(syncOverlayFromMain, 50);
   });
-});
-
-
-document.getElementById('resetDisplay').addEventListener('click', () => {
-  ['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => {
-    document.getElementById(id).value = 100;
-    document.getElementById(id + 'Val').textContent = '100%';
+  viewerMain.addHandler('canvas-exit', () => {
+    document.getElementById('mouseXY').textContent = 'x: --  y: --';
   });
-  applyFilters();
-});
-
-// ── CHANNEL MODE ─────────────────────────────────────────────
-function setChannel(mode){
-  channelMode = mode;
-  const btns = ['gfp','red','merge','side'];
-  btns.forEach(b => {
-    const el = document.getElementById('btn-' + b);
-    el.className = 'ch-btn' + (b === mode ? ` active-${b}` : '');
+  viewerMain.addHandler('canvas-scroll', function(e){
+    if(e.originalEvent && e.originalEvent.shiftKey){
+      e.preventDefaultAction = true;
+      handleShiftWheel(e.scroll > 0 ? -1 : 1);
+    }
   });
+}
 
-  const single = document.getElementById('single-wrap');
-  const side   = document.getElementById('side-wrap');
+function initViewers(){
+  viewerMain = OpenSeadragon({ id:'viewer-main', ...commonOpts });
+  viewerOverlay = OpenSeadragon({ id:'viewer-overlay', ...commonOpts, showNavigator:false, showNavigationControl:false });
+  viewerGfpSide = OpenSeadragon({ id:'viewer-gfp-side', ...commonOpts });
+  viewerRedSide = OpenSeadragon({ id:'viewer-red-side', ...commonOpts });
 
-  if(mode === 'side'){
-    single.style.display = 'none';
-    side.style.display = 'grid';
-    side.classList.add('active');
-    loadSideBySide(SECTIONS[idx]);
-  } else {
-    single.style.display = 'block';
-    side.style.display = 'none';
-    side.classList.remove('active');
-    loadSingleViewer(SECTIONS[idx]);
-  }
+  attachMainHandlers();
 
-  const modeLabels = {gfp:'GFP only', red:'tdTomato only', merge:'Merge overlay', side:'Side by side'};
-  document.getElementById('metaMode').textContent = modeLabels[mode];
+  viewerOverlay.addHandler('open', () => {
+    applyFilters();
+    setTimeout(syncOverlayFromMain, 50);
+  });
+  viewerGfpSide.addHandler('open', applyFilters);
+  viewerRedSide.addHandler('open', applyFilters);
+  viewerGfpSide.addHandler('zoom', () => syncSide(viewerGfpSide, viewerRedSide));
+  viewerGfpSide.addHandler('pan', () => syncSide(viewerGfpSide, viewerRedSide));
+  viewerRedSide.addHandler('zoom', () => syncSide(viewerRedSide, viewerGfpSide));
+  viewerRedSide.addHandler('pan', () => syncSide(viewerRedSide, viewerGfpSide));
 
-  const chipColors = {gfp:'var(--gfp)', red:'var(--red)', merge:'#d4a0d4', side:'#95AAD3'};
+  document.getElementById('single-wrap').addEventListener('wheel', function(e){
+    if(!e.shiftKey) return;
+    e.preventDefault();
+    handleShiftWheel(e.deltaY);
+  }, {passive:false});
+
+  document.getElementById('side-wrap').addEventListener('wheel', function(e){
+    if(!e.shiftKey) return;
+    e.preventDefault();
+    handleShiftWheel(e.deltaY);
+  }, {passive:false});
+
+  viewerInitialized = true;
+}
+
+function setButtons(mode){
+  ['gfp','red','merge','side'].forEach(name => {
+    document.getElementById('btn-' + name).className = 'ch-btn' + (name === mode ? ` active-${name}` : '');
+  });
+}
+
+function setModeLabels(mode){
+  const map = {
+    gfp: ['GFP only', 'GFP', 'GFP · EGFP-CT', 'var(--gfp)', 'chip'],
+    red: ['tdTomato only', 'Red', 'tdTomato only', 'var(--red)', 'chip red'],
+    merge: ['Merge overlay', 'Merge', 'GFP + tdTomato merge', 'var(--merge)', 'chip merge'],
+    side: ['Side by side', 'Side', 'Synchronized side by side', 'var(--side)', 'chip side']
+  };
+  const [meta, stat, chipText, statColor, chipClass] = map[mode];
+  document.getElementById('metaMode').textContent = meta;
+  document.getElementById('modeStat').textContent = stat;
+  document.getElementById('modeStat').style.color = statColor;
   const chip = document.getElementById('channelChip');
-  chip.style.color = chipColors[mode];
-  chip.textContent = mode === 'gfp' ? 'GFP · EGFP-CT' : mode === 'red' ? 'tdTomato' : mode === 'merge' ? 'GFP + tdTomato merge' : 'Side by side';
+  chip.className = chipClass;
+  chip.textContent = chipText;
 }
 
-// ── SOURCE DETECTION ─────────────────────────────────────────
-async function hasTile(path){
-  try{ const r = await fetch(path,{method:'HEAD'}); return r.ok; }catch(e){ return false; }
-}
+async function loadMode(section){
+  const gSrc = await getSource('gfp', section);
+  const rSrc = await getSource('red', section);
+  const modeText = channelMode === 'gfp' ? `GFP ${gSrc.label}` :
+                   channelMode === 'red' ? `tdTomato ${rSrc.label}` :
+                   channelMode === 'merge' ? `Merge ${gSrc.label}/${rSrc.label}` :
+                   `Side ${gSrc.label}/${rSrc.label}`;
 
-async function loadSingleViewer(section){
-  let src, mode;
+  document.getElementById('modeBadge').textContent = modeText;
+
+  if(channelMode === 'side'){
+    document.getElementById('single-wrap').style.display = 'none';
+    document.getElementById('side-wrap').classList.add('active');
+    openInViewer(viewerGfpSide, gSrc);
+    openInViewer(viewerRedSide, rSrc);
+    return;
+  }
+
+  document.getElementById('single-wrap').style.display = 'block';
+  document.getElementById('side-wrap').classList.remove('active');
+
+  if(channelMode === 'gfp'){
+    document.getElementById('viewer-overlay-wrap').classList.add('hide');
+    openInViewer(viewerMain, gSrc);
+    return;
+  }
   if(channelMode === 'red'){
-    const hasRedTile = await hasTile(redTile(section));
-    src  = hasRedTile ? redTile(section) : redFull(section);
-    mode = hasRedTile ? 'DZI tiles' : 'JPG fallback';
-  } else {
-    const hasGfpTile = await hasTile(gfpTile(section));
-    src  = hasGfpTile ? gfpTile(section) : gfpFull(section);
-    mode = hasGfpTile ? 'DZI tiles' : 'JPG fallback';
+    document.getElementById('viewer-overlay-wrap').classList.add('hide');
+    openInViewer(viewerMain, rSrc);
+    return;
   }
-  document.getElementById('modeBadge').textContent = mode;
-  document.getElementById('modeStat').textContent  = mode.includes('DZI') ? 'DZI' : 'JPG';
 
-  if(src.endsWith('.dzi')){
-    viewer.open(src);
-  } else {
-    viewer.open({ type:'image', url:src, buildPyramid:false });
-  }
-  applyFilters();
+  document.getElementById('viewer-overlay-wrap').classList.remove('hide');
+  openInViewer(viewerMain, gSrc);
+  openInViewer(viewerOverlay, rSrc);
+  setTimeout(syncOverlayFromMain, 100);
 }
 
-async function loadSideBySide(section){
-  const [hasGfp, hasRed] = await Promise.all([hasTile(gfpTile(section)), hasTile(redTile(section))]);
-  const gSrc = hasGfp ? gfpTile(section) : gfpFull(section);
-  const rSrc = hasRed ? redTile(section) : redFull(section);
-
-  document.getElementById('modeBadge').textContent = 'Side by side';
-  document.getElementById('modeStat').textContent  = 'Side';
-
-  if(gSrc.endsWith('.dzi')) viewerGfpSide.open(gSrc);
-  else viewerGfpSide.open({ type:'image', url:gSrc, buildPyramid:false });
-
-  if(rSrc.endsWith('.dzi')) viewerRedSide.open(rSrc);
-  else viewerRedSide.open({ type:'image', url:rSrc, buildPyramid:false });
-
-  applyFilters();
-}
-
-// ── OPEN SECTION ─────────────────────────────────────────────
 async function openSection(i, updateUrl=true){
   idx = Math.max(0, Math.min(SECTIONS.length - 1, i));
   const section = SECTIONS[idx];
 
   document.getElementById('sectionTitle').textContent = `Section ${idx+1} / ${SECTIONS.length} · ${section}`;
-  document.getElementById('metaSection').textContent  = section;
-  document.getElementById('metaIndex').textContent    = `${idx+1} / ${SECTIONS.length}`;
-  document.getElementById('shareChip').textContent    = section;
+  document.getElementById('metaSection').textContent = section;
+  document.getElementById('metaIndex').textContent = `${idx+1} / ${SECTIONS.length}`;
+  document.getElementById('shareChip').textContent = section;
 
-  if(channelMode === 'side') await loadSideBySide(section);
-  else await loadSingleViewer(section);
+  if(viewerInitialized){
+    await loadMode(section);
+    setTimeout(applyFilters, 120);
+  }
 
   document.querySelectorAll('.thumb').forEach((el, j) => el.classList.toggle('on', j === idx));
   const activeThumb = document.querySelectorAll('.thumb')[idx];
   if(activeThumb) activeThumb.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
 
-
-  
   if(updateUrl){
     const url = new URL(window.location.href);
     url.searchParams.set('section', section);
@@ -594,7 +647,14 @@ async function openSection(i, updateUrl=true){
   }
 }
 
-// ── THUMBNAIL STRIP ──────────────────────────────────────────
+async function setChannel(mode){
+  channelMode = mode;
+  setButtons(mode);
+  setModeLabels(mode);
+  if(viewerInitialized) await loadMode(SECTIONS[idx]);
+  setTimeout(applyFilters, 120);
+}
+
 function buildStrip(){
   const strip = document.getElementById('strip');
   strip.innerHTML = '';
@@ -602,19 +662,37 @@ function buildStrip(){
     const box = document.createElement('div');
     box.className = 'thumb' + (i === idx ? ' on' : '');
     box.onclick = () => openSection(i);
-    const img = document.createElement('img');
-    img.loading = 'lazy';
-    img.src = thumbPath(s);
-    img.onerror = () => { img.src = gfpFull(s); };
+
+    const pair = document.createElement('div');
+    pair.className = 'thumb-pair';
+
+    const imgGfp = document.createElement('img');
+    imgGfp.loading = 'lazy';
+    imgGfp.src = thumbPath(s);
+    imgGfp.onerror = () => { imgGfp.src = gfpFull(s); };
+
+    const imgRed = document.createElement('img');
+    imgRed.loading = 'lazy';
+    imgRed.src = redThumbPath(s);
+    imgRed.onerror = () => { imgRed.src = redFull(s); };
+
+    pair.appendChild(imgGfp);
+    pair.appendChild(imgRed);
+
+    const channels = document.createElement('div');
+    channels.className = 'thumb-channels';
+    channels.innerHTML = '<span>GFP</span><span>tdTom</span>';
+
     const lbl = document.createElement('label');
-    lbl.textContent = i + 1;
-    box.appendChild(img);
+    lbl.textContent = `${s} · #${i+1}`;
+
+    box.appendChild(pair);
+    box.appendChild(channels);
     box.appendChild(lbl);
     strip.appendChild(box);
   });
 }
 
-// ── GRID ─────────────────────────────────────────────────────
 function buildGrid(){
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
@@ -623,37 +701,31 @@ function buildGrid(){
     card.className = 'gcard';
     card.onclick = () => { showViewer(); openSection(i); };
 
-    // Dual thumb row
-    const thumbRow = document.createElement('div');
-    thumbRow.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#000';
+    const pair = document.createElement('div');
+    pair.className = 'grid-pair';
 
     const imgGfp = document.createElement('img');
     imgGfp.loading = 'lazy';
-    imgGfp.style.cssText = 'display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#000';
     imgGfp.src = thumbPath(s);
     imgGfp.onerror = () => { imgGfp.src = gfpFull(s); };
 
     const imgRed = document.createElement('img');
     imgRed.loading = 'lazy';
-    imgRed.style.cssText = 'display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#000';
     imgRed.src = redThumbPath(s);
     imgRed.onerror = () => { imgRed.src = redFull(s); };
 
-    thumbRow.appendChild(imgGfp);
-    thumbRow.appendChild(imgRed);
+    pair.appendChild(imgGfp);
+    pair.appendChild(imgRed);
 
-    // Channel labels
     const labels = document.createElement('div');
-    labels.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:2px 4px';
-    labels.innerHTML = `
-      <span style="font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--gfp)">GFP</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--red)">tdTomato</span>`;
+    labels.className = 'grid-labels';
+    labels.innerHTML = '<span>GFP</span><span>tdTomato</span>';
 
     const foot = document.createElement('div');
     foot.className = 'gfoot';
     foot.innerHTML = `<span class="id">${s}</span><span class="n">#${i+1}</span>`;
 
-    card.appendChild(thumbRow);
+    card.appendChild(pair);
     card.appendChild(labels);
     card.appendChild(foot);
     grid.appendChild(card);
@@ -667,19 +739,23 @@ function showGrid(){
   document.getElementById('nav-viewer').classList.remove('on');
 }
 
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.style.display = 'none', 2200);
+function showViewer(){
+  if(!viewerInitialized){
+    initViewers();
+    setModeLabels(channelMode);
+  }
+  document.getElementById('viewerPanel').classList.remove('hide');
+  document.getElementById('gridPanel').classList.add('hide');
+  document.getElementById('nav-viewer').classList.add('on');
+  document.getElementById('nav-grid').classList.remove('on');
+  openSection(idx, false);
 }
 
 function copyLink(){
   const url = new URL(window.location.href);
   url.searchParams.set('section', SECTIONS[idx]);
   navigator.clipboard.writeText(url.toString());
-  toast('Link copied!');
+  showToast('Link copied');
 }
 
 function initialIndexFromURL(){
@@ -688,60 +764,52 @@ function initialIndexFromURL(){
   return i >= 0 ? i : 0;
 }
 
-document.getElementById('prevBtn').onclick  = () => openSection(idx - 1);
-document.getElementById('nextBtn').onclick  = () => openSection(idx + 1);
-document.getElementById('copyBtn').onclick  = copyLink;
-document.getElementById('fitBtn').onclick   = () => { viewer && viewer.viewport && viewer.viewport.goHome(); };
+['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => {
+  document.getElementById(id).addEventListener('input', applyFilters);
+});
+
+document.getElementById('resetDisplay').addEventListener('click', () => {
+  ['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => document.getElementById(id).value = 100);
+  applyFilters();
+});
+
+document.getElementById('prevBtn').onclick = () => openSection(idx - 1);
+document.getElementById('nextBtn').onclick = () => openSection(idx + 1);
+document.getElementById('copyBtn').onclick = copyLink;
+document.getElementById('fitBtn').onclick = () => {
+  if(channelMode === 'side'){
+    if(viewerGfpSide) viewerGfpSide.viewport.goHome();
+    if(viewerRedSide) viewerRedSide.viewport.goHome();
+  }else{
+    if(viewerMain) viewerMain.viewport.goHome();
+    if(viewerOverlay && channelMode === 'merge') viewerOverlay.viewport.goHome();
+  }
+};
+
 document.getElementById('nav-viewer').onclick = showViewer;
-
-document.getElementById('nav-grid').onclick   = showGrid;
-
+document.getElementById('nav-grid').onclick = showGrid;
 
 document.addEventListener('keydown', (e) => {
   if(document.getElementById('viewerPanel').classList.contains('hide')) return;
   if(e.key === 'ArrowRight') openSection(idx + 1);
-  if(e.key === 'ArrowLeft')  openSection(idx - 1);
+  if(e.key === 'ArrowLeft') openSection(idx - 1);
   if(e.key.toLowerCase() === 'g') showGrid();
   if(e.key.toLowerCase() === 'v') showViewer();
 });
 
-
-let viewerInitialized = false;
-
 window.addEventListener('load', async () => {
-
   buildStrip();
   buildGrid();
-  resetDisplayFilters();
+  applyFilters();
   idx = initialIndexFromURL();
-
-
-  // If URL has a specific section, go directly to viewer
   const hasSection = new URLSearchParams(window.location.search).get('section');
   if(hasSection){
-    initViewers();
-    viewerInitialized = true;
     showViewer();
     await openSection(idx, false);
-  } else {
+  }else{
     showGrid();
   }
-
 });
-
-// Init viewer lazily when first opened
-const _origShowViewer = showViewer;
-function showViewer(){
-  if(!viewerInitialized){
-    initViewers();
-    viewerInitialized = true;
-    openSection(idx, false);
-  }
-  document.getElementById('viewerPanel').classList.remove('hide');
-  document.getElementById('gridPanel').classList.add('hide');
-  document.getElementById('nav-viewer').classList.add('on');
-  document.getElementById('nav-grid').classList.remove('on');
-}
 </script>
 </body>
 </html>
