@@ -232,13 +232,13 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
 
     <section id="viewerPanel" class="hide">
       <div class="channel-bar">
-        <button class="ch-btn active-gfp" id="btn-gfp" onclick="setChannel('gfp')">
+        <button class="ch-btn" id="btn-gfp" onclick="setChannel('gfp')">
           <span class="ch-dot" style="background:var(--gfp)"></span> GFP only
         </button>
         <button class="ch-btn" id="btn-red" onclick="setChannel('red')">
           <span class="ch-dot" style="background:var(--red)"></span> tdTomato only
         </button>
-        <button class="ch-btn" id="btn-merge" onclick="setChannel('merge')">
+        <button class="ch-btn active-merge" id="btn-merge" onclick="setChannel('merge')">
           <span class="ch-dot" style="background:linear-gradient(135deg,var(--gfp),var(--red))"></span> Merge
         </button>
         <button class="ch-btn" id="btn-side" onclick="setChannel('side')">
@@ -404,7 +404,7 @@ const gfpTile = k => `Tiles/${k}.dzi`;
 const redTile = k => `Images_tdTomato/Tiles/${k}.dzi`;
 
 let idx = 0;
-let channelMode = 'gfp';
+let channelMode = 'merge';
 let viewerMain = null;
 let viewerOverlay = null;
 let viewerGfpSide = null;
@@ -737,8 +737,8 @@ function buildStrip(){
     box.className = 'thumb' + (i === idx ? ' on' : '');
     box.onclick = () => openSection(i);
 
-    const pair = document.createElement('div');
-    pair.className = 'thumb-pair';
+    const merge = document.createElement('div');
+    merge.className = 'thumb-merge';
 
     const imgGfp = document.createElement('img');
     imgGfp.loading = 'lazy';
@@ -747,21 +747,22 @@ function buildStrip(){
 
     const imgRed = document.createElement('img');
     imgRed.loading = 'lazy';
+    imgRed.className = 'red';
     imgRed.src = redThumbPath(s);
     imgRed.onerror = () => { imgRed.src = redFull(s); };
 
-    pair.appendChild(imgGfp);
-    pair.appendChild(imgRed);
+    merge.appendChild(imgGfp);
+    merge.appendChild(imgRed);
 
-    const channels = document.createElement('div');
-    channels.className = 'thumb-channels';
-    channels.innerHTML = '<span>GFP</span><span>tdTom</span>';
+    const mode = document.createElement('div');
+    mode.className = 'thumb-mode';
+    mode.textContent = 'Merged overview';
 
     const lbl = document.createElement('label');
     lbl.textContent = `${s} · #${i+1}`;
 
-    box.appendChild(pair);
-    box.appendChild(channels);
+    box.appendChild(merge);
+    box.appendChild(mode);
     box.appendChild(lbl);
     strip.appendChild(box);
   });
@@ -775,8 +776,8 @@ function buildGrid(){
     card.className = 'gcard';
     card.onclick = () => { showViewer(); openSection(i); };
 
-    const pair = document.createElement('div');
-    pair.className = 'grid-pair';
+    const merge = document.createElement('div');
+    merge.className = 'grid-merge';
 
     const imgGfp = document.createElement('img');
     imgGfp.loading = 'lazy';
@@ -785,22 +786,23 @@ function buildGrid(){
 
     const imgRed = document.createElement('img');
     imgRed.loading = 'lazy';
+    imgRed.className = 'red';
     imgRed.src = redThumbPath(s);
     imgRed.onerror = () => { imgRed.src = redFull(s); };
 
-    pair.appendChild(imgGfp);
-    pair.appendChild(imgRed);
+    merge.appendChild(imgGfp);
+    merge.appendChild(imgRed);
 
-    const labels = document.createElement('div');
-    labels.className = 'grid-labels';
-    labels.innerHTML = '<span>GFP</span><span>tdTomato</span>';
+    const mode = document.createElement('div');
+    mode.className = 'grid-mode';
+    mode.textContent = 'Merged overview';
 
     const foot = document.createElement('div');
     foot.className = 'gfoot';
     foot.innerHTML = `<span class="id">${s}</span><span class="n">#${i+1}</span>`;
 
-    card.appendChild(pair);
-    card.appendChild(labels);
+    card.appendChild(merge);
+    card.appendChild(mode);
     card.appendChild(foot);
     grid.appendChild(card);
   });
