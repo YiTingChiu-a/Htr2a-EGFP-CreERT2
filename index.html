@@ -112,6 +112,27 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
 .reset-btn:hover{border-color:var(--txt3);color:var(--txt)}
 .note{margin-top:10px;background:rgba(85,207,26,.04);border:1px solid rgba(85,207,26,.1);border-radius:9px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:8.5px;line-height:1.7;color:var(--txt2)}
 
+
+.section-rail{
+  position:absolute;right:10px;bottom:58px;z-index:45;width:72px;max-height:62%;
+  background:rgba(12,15,21,.78);border:1px solid var(--bdr2);border-radius:12px;
+  backdrop-filter:blur(8px);padding:8px 6px;overflow-y:auto;
+}
+.section-rail::-webkit-scrollbar{width:4px}
+.section-rail::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
+.rail-title{
+  font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--txt3);padding:0 4px 6px
+}
+.rail-item{
+  font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt2);
+  padding:5px 6px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;
+  gap:6px;border:1px solid transparent;transition:.12s;
+}
+.rail-item:hover{background:var(--surf2);color:var(--txt)}
+.rail-item.on{background:rgba(85,207,26,.09);color:var(--gfp);border-color:rgba(85,207,26,.2)}
+.rail-item small{color:var(--txt3)}
+
 .stripcard{margin-top:12px}
 .striphdr{padding:8px 12px 0;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--txt3);text-transform:uppercase}
 .strip{display:flex;gap:5px;overflow-x:auto;padding:8px 12px 12px}
@@ -184,7 +205,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
     <div class="spacer"></div>
     <div class="ssec">File paths</div>
     <div class="sitem-info">GFP tiles <span style="color:var(--gfp)">Tiles/</span></div>
-    <div class="sitem-info">Red tiles <span style="color:var(--red)">Tiles-tdTomato/</span></div>
+    <div class="sitem-info">Red tiles <span style="color:var(--red)">Images_tdTomato/Tiles/</span></div>
     <a class="back-link" href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/">← Atlas Home</a>
   </aside>
 
@@ -230,7 +251,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
           <div class="cardhdr">
             <div>
               <div class="cardtitle" id="sectionTitle">Section 1 / 38 · TC-1_01</div>
-              <div class="cardsub">Mouse wheel zoom · drag pan · arrows switch sections · Shift+wheel browse</div>
+              <div class="cardsub">Mouse wheel zoom · drag pan · arrows switch sections · Allen-style rail + Shift+wheel browse</div>
             </div>
             <div class="badge" id="modeBadge">Loading…</div>
           </div>
@@ -255,6 +276,9 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
             <div class="overlay-bottom-left">
               <div class="chip muted" id="mouseXY">x: -- y: --</div>
               <div class="chip muted" id="zoomChip">zoom: --</div>
+            </div>
+            <div class="section-rail" id="sectionRail">
+              <div class="rail-title">Sections</div>
             </div>
           </div>
 
@@ -315,18 +339,30 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
                 <span class="val" style="color:var(--red)" id="redContrastVal">100%</span>
               </div>
 
+              <div class="ctrl-section-label">── Merge opacity</div>
+              <div class="ctrl-row">
+                <label>GFP opacity</label>
+                <input type="range" id="gfpOpacity" min="0" max="100" value="100">
+                <span class="val" id="gfpOpacityVal">100%</span>
+              </div>
+              <div class="ctrl-row">
+                <label>tdTom opacity</label>
+                <input type="range" class="red-slider" id="redOpacity" min="0" max="100" value="70">
+                <span class="val" style="color:var(--red)" id="redOpacityVal">70%</span>
+              </div>
+
               <button class="reset-btn" id="resetDisplay">Reset all</button>
             </div>
 
             <div class="note">
-              Grid thumbnails stay <b>side-by-side</b>. The viewer supports <b>GFP</b>, <b>tdTomato</b>, <b>Merge</b>, and <b>Side by side</b>. Merge uses synchronized GFP + tdTomato overlays; side-by-side uses synchronized zoom.
+              Grid thumbnails stay <b>side-by-side</b>. The viewer supports <b>GFP</b>, <b>tdTomato</b>, <b>Merge</b>, and <b>Side by side</b>. <b>Merge</b> now uses a true stacked overlay with separate GFP / tdTomato opacity sliders. The floating section rail gives Allen-style fast section browsing.
             </div>
           </div>
         </div>
       </div>
 
       <div class="card stripcard">
-        <div class="striphdr">All 38 sections — click to navigate · Shift+scroll to browse</div>
+        <div class="striphdr">All 38 sections — click to navigate · strip wheel + Shift+scroll to browse</div>
         <div class="strip" id="strip"></div>
       </div>
     </section>
@@ -365,7 +401,7 @@ const redThumbPath = k => `Images_tdTomato/Thumbs/${k}.jpg`;
 const gfpFull = k => `Images/full/${k}.jpg`;
 const redFull = k => `Images_tdTomato/full/${k}.jpg`;
 const gfpTile = k => `Tiles/${k}.dzi`;
-const redTile = k => `Tiles-tdTomato/${k}.dzi`;
+const redTile = k => `Images_tdTomato/Tiles/${k}.dzi`;
 
 let idx = 0;
 let channelMode = 'gfp';
@@ -438,11 +474,15 @@ function applyFilters(){
   const gc = document.getElementById('gfpContrast').value;
   const rb = document.getElementById('redBright').value;
   const rc = document.getElementById('redContrast').value;
+  const go = document.getElementById('gfpOpacity').value;
+  const ro = document.getElementById('redOpacity').value;
 
   document.getElementById('gfpBrightVal').textContent = gb + '%';
   document.getElementById('gfpContrastVal').textContent = gc + '%';
   document.getElementById('redBrightVal').textContent = rb + '%';
   document.getElementById('redContrastVal').textContent = rc + '%';
+  document.getElementById('gfpOpacityVal').textContent = go + '%';
+  document.getElementById('redOpacityVal').textContent = ro + '%';
 
   const mainCanvas = getCanvasEl(viewerMain);
   const overlayCanvas = getCanvasEl(viewerOverlay);
@@ -460,6 +500,11 @@ function applyFilters(){
   }
   if(gfpSideCanvas) gfpSideCanvas.style.filter = gfpFilter;
   if(redSideCanvas) redSideCanvas.style.filter = redFilter;
+
+  document.getElementById('viewer-main-wrap').style.opacity =
+    channelMode === 'merge' ? String(Number(go)/100) : '1';
+  document.getElementById('viewer-overlay-wrap').style.opacity =
+    channelMode === 'merge' ? String(Number(ro)/100) : '1';
 }
 
 function syncOverlayFromMain(){
@@ -639,6 +684,7 @@ async function openSection(i, updateUrl=true){
   document.querySelectorAll('.thumb').forEach((el, j) => el.classList.toggle('on', j === idx));
   const activeThumb = document.querySelectorAll('.thumb')[idx];
   if(activeThumb) activeThumb.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  updateSectionRail();
 
   if(updateUrl){
     const url = new URL(window.location.href);
@@ -653,6 +699,34 @@ async function setChannel(mode){
   setModeLabels(mode);
   if(viewerInitialized) await loadMode(SECTIONS[idx]);
   setTimeout(applyFilters, 120);
+}
+
+
+function buildSectionRail(){
+  const rail = document.getElementById('sectionRail');
+  rail.innerHTML = '<div class="rail-title">Sections</div>';
+  strip.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    handleShiftWheel(e.deltaY);
+  }, {passive:false});
+  SECTIONS.forEach((s, i) => {
+    const item = document.createElement('div');
+    item.className = 'rail-item' + (i === idx ? ' on' : '');
+    item.dataset.index = i;
+    item.innerHTML = `<span>${String(i+1).padStart(2,'0')}</span><small>${s.replace('TC-','')}</small>`;
+    item.onclick = () => openSection(i);
+    rail.appendChild(item);
+  });
+  rail.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    handleShiftWheel(e.deltaY);
+  }, {passive:false});
+}
+
+function updateSectionRail(){
+  document.querySelectorAll('.rail-item').forEach((el, j) => el.classList.toggle('on', j === idx));
+  const active = document.querySelectorAll('.rail-item')[idx];
+  if(active) active.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function buildStrip(){
@@ -764,12 +838,14 @@ function initialIndexFromURL(){
   return i >= 0 ? i : 0;
 }
 
-['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => {
+['gfpBright','gfpContrast','redBright','redContrast','gfpOpacity','redOpacity'].forEach(id => {
   document.getElementById(id).addEventListener('input', applyFilters);
 });
 
 document.getElementById('resetDisplay').addEventListener('click', () => {
   ['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => document.getElementById(id).value = 100);
+  document.getElementById('gfpOpacity').value = 100;
+  document.getElementById('redOpacity').value = 70;
   applyFilters();
 });
 
@@ -800,6 +876,7 @@ document.addEventListener('keydown', (e) => {
 window.addEventListener('load', async () => {
   buildStrip();
   buildGrid();
+  buildSectionRail();
   applyFilters();
   idx = initialIndexFromURL();
   const hasSection = new URLSearchParams(window.location.search).get('section');
