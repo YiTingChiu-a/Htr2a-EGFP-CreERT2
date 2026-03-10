@@ -42,6 +42,7 @@ a{color:inherit;text-decoration:none}
 .topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
 .title{font-size:22px;font-weight:700;letter-spacing:-.02em}
 .title em{font-style:normal;color:var(--gfp)}
+
 .subtitle{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--txt3);margin-top:4px}
 
 /* ── STATS ── */
@@ -119,6 +120,8 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
 .stripcard{margin-top:12px}
 .striphdr{padding:8px 12px 0;font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.1em;color:var(--txt3);text-transform:uppercase}
 .strip{display:flex;gap:5px;overflow-x:auto;padding:8px 12px 12px}
+
+ 
 .strip::-webkit-scrollbar{height:4px}.strip::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
 .thumb{flex:0 0 auto;width:70px;border-radius:7px;overflow:hidden;border:2px solid var(--bdr);background:#000;cursor:pointer;transition:.15s}
 .thumb:hover{border-color:var(--txt3)}
@@ -228,14 +231,18 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
           <div class="cardhdr">
             <div>
               <div class="cardtitle" id="sectionTitle">Section 1 / 38 · TC-1_01</div>
+
               <div class="cardsub">Mouse wheel to zoom · drag to pan · arrow keys to switch · Shift+scroll to browse</div>
+
             </div>
             <div class="badge" id="modeBadge">Detecting…</div>
           </div>
 
+
           <!-- SINGLE VIEWER (GFP / Red / Merge) -->
           <div class="viewerwrap" id="single-wrap">
             <div id="viewer"></div>
+
             <div class="overlay">
               <div class="chip" id="channelChip">GFP · EGFP-CT</div>
               <div class="chip" id="shareChip">TC-1_01</div>
@@ -246,6 +253,10 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
               <button class="btn" id="nextBtn">Next ▶</button>
               <button class="btn" id="copyBtn">Copy link</button>
               <button class="btn warn" id="fitBtn">Fit view</button>
+            </div>
+            <div class="overlay-bottom-left">
+              <div class="chip muted" id="mouseXY">x: --  y: --</div>
+              <div class="chip muted" id="zoomChip">zoom: --</div>
             </div>
           </div>
 
@@ -313,6 +324,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
 
             <div class="note">
               Switch channels using the buttons above the viewer. <b>Merge</b> overlays both channels. <b>Side by side</b> shows them simultaneously with synchronized zoom.
+
             </div>
           </div>
         </div>
@@ -366,13 +378,16 @@ const redTile     = k => `Images_tdTomato/Tiles/${k}.dzi`;
 let idx = 0;
 let channelMode = 'gfp'; // gfp | red | merge | side
 let viewer = null;
+
 let viewerGfpSide = null;
 let viewerRedSide = null;
+
 
 // ── INIT VIEWERS ─────────────────────────────────────────────
 function initViewers(){
   const commonOpts = {
     prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/',
+
     showNavigator: false,
     visibilityRatio: 1,
     constrainDuringPan: true,
@@ -381,6 +396,7 @@ function initViewers(){
     minZoomLevel: 0.5,
     animationTime: 0.8,
     blendTime: 0.12,
+
     gestureSettingsTouch: { pinchToZoom:true, flickEnabled:true, clickToZoom:false, dblClickToZoom:true },
     gestureSettingsMouse: { clickToZoom:false, dblClickToZoom:true, scrollToZoom:true }
   };
@@ -423,7 +439,23 @@ function initViewers(){
       openSection(idx + (e.scroll > 0 ? -1 : 1));
     }
   });
+
+  viewer.addHandler('canvas-drag', updateMouseInfo);
+  viewer.addHandler('canvas-scroll', updateMouseInfo);
+  viewer.addHandler('animation', updateMouseInfo);
+  viewer.addHandler('open', updateMouseInfo);
+  viewer.addHandler('canvas-enter', updateMouseInfo);
+  viewer.addHandler('canvas-exit', () => {
+    document.getElementById('mouseXY').textContent = 'x: --  y: --';
+  });
+  viewer.addHandler('canvas-move', function(event){
+    updateMouseInfo(event);
+  });
+
+  const shell = document.getElementById('viewer-shell');
+  shell.addEventListener('wheel', handleSectionWheel, { passive: false });
 }
+
 
 // ── DISPLAY FILTERS ───────────────────────────────────────────
 function applyFilters(){
@@ -439,6 +471,7 @@ function applyFilters(){
   }
   document.getElementById('viewer-gfp-side').style.filter = `brightness(${gb}%) contrast(${gc}%)`;
   document.getElementById('viewer-red-side').style.filter = `brightness(${rb}%) contrast(${rc}%)`;
+
 }
 
 ['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => {
@@ -448,6 +481,7 @@ function applyFilters(){
     applyFilters();
   });
 });
+
 
 document.getElementById('resetDisplay').addEventListener('click', () => {
   ['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => {
@@ -551,6 +585,8 @@ async function openSection(i, updateUrl=true){
   const activeThumb = document.querySelectorAll('.thumb')[idx];
   if(activeThumb) activeThumb.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
 
+
+  
   if(updateUrl){
     const url = new URL(window.location.href);
     url.searchParams.set('section', section);
@@ -657,7 +693,9 @@ document.getElementById('nextBtn').onclick  = () => openSection(idx + 1);
 document.getElementById('copyBtn').onclick  = copyLink;
 document.getElementById('fitBtn').onclick   = () => { viewer && viewer.viewport && viewer.viewport.goHome(); };
 document.getElementById('nav-viewer').onclick = showViewer;
+
 document.getElementById('nav-grid').onclick   = showGrid;
+
 
 document.addEventListener('keydown', (e) => {
   if(document.getElementById('viewerPanel').classList.contains('hide')) return;
@@ -667,12 +705,16 @@ document.addEventListener('keydown', (e) => {
   if(e.key.toLowerCase() === 'v') showViewer();
 });
 
+
 let viewerInitialized = false;
 
 window.addEventListener('load', async () => {
+
   buildStrip();
   buildGrid();
+  resetDisplayFilters();
   idx = initialIndexFromURL();
+
 
   // If URL has a specific section, go directly to viewer
   const hasSection = new URLSearchParams(window.location.search).get('section');
@@ -684,6 +726,7 @@ window.addEventListener('load', async () => {
   } else {
     showGrid();
   }
+
 });
 
 // Init viewer lazily when first opened
