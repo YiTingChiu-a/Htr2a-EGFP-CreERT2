@@ -7,63 +7,194 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
 <style>
 :root{
-  --bg:#04070c; --panel:#09101d; --panel2:#0e1628; --line:#1f2b44;
-  --text:#eaf0ff; --muted:#7c89a7; --gfp:#78ff5a; --tdt:#ff5a7c; --merge:#ffe55a;
+  --bg:#04070c; --panel:#08111c; --panel2:#0b1523; --line:#1b2a43;
+  --text:#edf2ff; --muted:#7f8cab; --gfp:#7cff57; --tdt:#ff6387; --merge:#ffd85a;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:radial-gradient(circle at top,#09111e,#03060a 60%);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;overflow:hidden}
-button,a{font:inherit}
-a{text-decoration:none;color:inherit}
-.app{display:grid;grid-template-rows:86px 1fr 108px;height:100vh}
-.topbar{display:grid;grid-template-columns:1fr auto auto auto auto;gap:12px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);background:rgba(8,12,21,.88)}
-.title{font-size:18px;font-weight:800;letter-spacing:.01em}
-.meta{margin-top:6px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px}
-.topbtn,.chip{height:42px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:rgba(15,22,38,.72);color:var(--text)}
+html,body{margin:0;height:100%;background:radial-gradient(circle at top,#0a1220,#03060a 60%);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit}
+.app{display:grid;grid-template-rows:auto 1fr auto auto;height:100vh;gap:0}
+.topbar{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:20px 24px;border-bottom:1px solid var(--line);background:rgba(7,12,20,.9)}
+.title{font-size:18px;font-weight:800;letter-spacing:.02em}
+.subtitle{margin-top:6px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--muted)}
+.topactions{display:flex;gap:10px;align-items:center}
+.topbtn,.statuschip{height:42px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:rgba(14,22,36,.76);color:var(--text);display:flex;align-items:center;justify-content:center}
 .topbtn{cursor:pointer}
-.topbtn:hover{border-color:#3e4d73}
-.chip{display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--merge)}
-.stage{position:relative;min-height:0;background:#000}
+.topbtn:hover{border-color:#38507c}
+.statuschip{color:var(--merge);font-weight:700}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;padding:18px 20px;min-height:0}
+.viewerCard,.metaCard,.stripCard{background:linear-gradient(180deg,rgba(8,14,25,.98),rgba(6,10,18,.98));border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.viewerHdr,.metaHdr{padding:16px 18px;border-bottom:1px solid var(--line)}
+.viewerHdr h2,.metaHdr h2{margin:0;font-size:16px}
+.viewerHdr p,.metaHdr p{margin:6px 0 0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;color:var(--muted)}
+.stageWrap{position:relative;background:#000;height:calc(100vh - 355px);min-height:420px}
 #viewer{position:absolute;inset:0}
 #viewer .openseadragon-container,.openseadragon-canvas{background:#000 !important}
-.viewer-overlay{position:absolute;left:18px;bottom:18px;display:flex;gap:10px;z-index:20;pointer-events:none}
-.infochip{padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(9,13,22,.72);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:#aab5d0}
-.controls{display:flex;align-items:center;gap:12px;padding:16px 22px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(8,12,21,.96)}
-.modegroup{display:flex;gap:10px}
-.modebtn{height:44px;padding:0 18px;border-radius:14px;border:1px solid var(--line);background:rgba(15,22,38,.8);color:#cdd6ee;cursor:pointer;font-weight:700}
-.modebtn:hover{border-color:#44557f}
-.modebtn.active.g{color:var(--gfp);border-color:rgba(120,255,90,.35);background:rgba(120,255,90,.08)}
-.modebtn.active.r{color:var(--tdt);border-color:rgba(255,90,124,.35);background:rgba(255,90,124,.08)}
-.modebtn.active.m{color:var(--merge);border-color:rgba(255,229,90,.35);background:rgba(255,229,90,.08)}
+.overlayTop,.overlayBottom,.overlayRight{position:absolute;z-index:20;display:flex;gap:10px}
+.overlayTop{left:18px;top:18px;flex-wrap:wrap}
+.overlayBottom{left:18px;bottom:18px;flex-wrap:wrap}
+.overlayRight{right:18px;top:18px;flex-wrap:wrap}
+.chip,.ghostbtn{border:1px solid var(--line);background:rgba(9,13,22,.76);border-radius:12px;padding:10px 12px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}
+.chip.g{color:var(--gfp)} .chip.r{color:var(--tdt)} .chip.m{color:var(--merge)}
+.ghostbtn{cursor:pointer;color:#d3ddf6}
+.ghostbtn:hover{border-color:#3c527e}
+.controlsBar{display:flex;align-items:center;gap:12px;padding:16px 18px;border-top:1px solid var(--line);background:rgba(7,12,20,.95)}
+.modebtn{height:44px;padding:0 18px;border-radius:14px;border:1px solid var(--line);background:rgba(15,22,38,.82);color:#d6def5;cursor:pointer;font-weight:700}
+.modebtn:hover{border-color:#405782}
+.modebtn.active.g{color:var(--gfp);border-color:rgba(124,255,87,.38);background:rgba(124,255,87,.08)}
+.modebtn.active.r{color:var(--tdt);border-color:rgba(255,99,135,.38);background:rgba(255,99,135,.08)}
+.modebtn.active.m{color:var(--merge);border-color:rgba(255,216,90,.38);background:rgba(255,216,90,.08)}
 .spacer{flex:1}
-.smallbtn,.panelbtn{height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:rgba(15,22,38,.8);color:#cdd6ee;cursor:pointer;display:inline-flex;align-items:center}
-.panelbtn{padding:0 16px;background:rgba(18,30,50,.86);color:#d9e2ff}
-.drawer{position:absolute;right:18px;top:18px;width:310px;background:rgba(8,12,21,.96);border:1px solid var(--line);border-radius:18px;padding:16px;z-index:30;display:none;box-shadow:0 20px 50px rgba(0,0,0,.4)}
-.drawer.open{display:block}
-.drawer h3{margin:0 0 14px;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#93a1c2}
-.row{margin-bottom:14px}
-.row label{display:flex;justify-content:space-between;margin-bottom:8px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:#d7dff8}
+.panelbtn{height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:rgba(18,28,46,.86);color:#dbe4ff;cursor:pointer}
+.panelbtn:hover{border-color:#405782}
+.metaBody{padding:18px}
+.kv{display:grid;grid-template-columns:112px 1fr;gap:12px 12px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.6}
+.k{color:var(--muted)}
+.v{color:var(--text)}
+.v a{color:#8fc6ff;text-decoration:underline}
+.v.g{color:var(--gfp)} .v.r{color:var(--tdt)} .v.m{color:var(--merge)}
+.metaBlock{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.metaBlock h3{margin:0 0 12px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.row{margin-bottom:12px}
+.row label{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:#dbe3fa}
 .row input{width:100%}
-.filmstrip{display:flex;gap:10px;overflow-x:auto;padding:16px 18px;background:rgba(6,10,18,.96)}
+.resetBtn{width:100%;height:42px;border-radius:12px;border:1px solid var(--line);background:transparent;color:#d4dcf4;cursor:pointer}
+.resetBtn:hover{border-color:#405782}
+.note{margin-top:14px;padding:14px;border:1px solid rgba(124,255,87,.18);background:rgba(124,255,87,.04);border-radius:16px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.6;color:#bac5df}
+.stripCard{margin:0 20px 18px;padding:12px 14px 14px}
+.stripHead{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:2px 4px 12px 4px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.filmstrip{display:flex;gap:10px;overflow-x:auto;padding-bottom:2px}
 .filmstrip::-webkit-scrollbar{height:8px}.filmstrip::-webkit-scrollbar-thumb{background:#20304d;border-radius:999px}
-.thumb{flex:0 0 114px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#090d16;cursor:pointer;transition:border-color .14s ease, transform .14s ease}
-.thumb:hover{border-color:#45537c;transform:translateY(-1px)}
-.thumb.active{border-color:var(--merge);box-shadow:0 0 0 1px rgba(255,229,90,.18) inset}
+.thumb{flex:0 0 118px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#070b12;cursor:pointer;transition:border-color .14s ease,transform .14s ease}
+.thumb:hover{border-color:#405782;transform:translateY(-1px)}
+.thumb.active{border-color:var(--merge);box-shadow:0 0 0 1px rgba(255,216,90,.2) inset}
 .mthumb{position:relative;aspect-ratio:4/3;background:#000}
 .mthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
-.mthumb .g{mix-blend-mode:screen;opacity:1}
-.mthumb .r{mix-blend-mode:screen;opacity:.78}
-.tfoot{padding:8px 10px 10px;background:rgba(12,18,31,.94)}
-.tname{font-size:14px;font-weight:700}
-.tsub{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:11px;margin-top:3px}
-@media (max-width: 900px){
-  .app{grid-template-rows:94px 1fr 120px}
-  .topbar{grid-template-columns:1fr auto auto;grid-auto-rows:auto}
-  .controls{flex-wrap:wrap}
-  .drawer{left:12px;right:12px;width:auto}
+.mthumb img.g{mix-blend-mode:screen;opacity:1}
+.mthumb img.r{mix-blend-mode:screen;opacity:.72}
+.tfoot{padding:8px 10px 10px;background:rgba(11,18,30,.94)}
+.tname{font-size:13px;font-weight:700}
+.tsub{margin-top:3px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;color:var(--muted)}
+.drawer{position:absolute;right:16px;bottom:72px;width:280px;max-width:calc(100% - 32px);background:rgba(8,12,21,.97);border:1px solid var(--line);border-radius:18px;padding:16px;display:none;z-index:40;box-shadow:0 18px 40px rgba(0,0,0,.42)}
+.drawer.open{display:block}
+.drawer h3{margin:0 0 14px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+@media (max-width: 1180px){
+  .main{grid-template-columns:1fr}
+  .stageWrap{height:60vh}
+}
+@media (max-width: 760px){
+  .topbar{flex-direction:column}
+  .controlsBar{flex-wrap:wrap}
+  .stageWrap{height:52vh;min-height:340px}
+  .thumb{flex-basis:102px}
 }
 </style>
 </head>
 <body>
+<div class="app">
+  <div class="topbar">
+    <div>
+      <div class="title" id="titleLine">Section 1 / 38 · TC-1_01</div>
+      <div class="subtitle">Whole-brain section at top · drag to pan · wheel to zoom · double-click for smooth zoom · arrow keys switch sections</div>
+    </div>
+    <div class="topactions">
+      <a class="topbtn" href="index.html">← Overview</a>
+      <button class="topbtn" id="prevTop">◀ Prev</button>
+      <button class="topbtn" id="nextTop">Next ▶</button>
+      <button class="topbtn" id="copyTop">Copy link</button>
+      <div class="statuschip" id="statusChip">Loading…</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <section class="viewerCard">
+      <div class="viewerHdr">
+        <h2>Whole-brain section viewer</h2>
+        <p>Default = Merge. Use bottom buttons to switch channels while keeping the same zoomed field.</p>
+      </div>
+      <div class="stageWrap">
+        <div id="viewer"></div>
+        <div class="overlayTop">
+          <div class="chip g" id="chipChannel">Merge</div>
+          <div class="chip" id="chipSection">TC-1_01</div>
+          <div class="chip" id="chipCoords">x: —  y: —  zoom: —</div>
+        </div>
+        <div class="overlayRight">
+          <button class="ghostbtn" id="fitBtn">Fit view</button>
+          <button class="ghostbtn" id="displayBtn">Display</button>
+        </div>
+        <div class="overlayBottom">
+          <div class="chip" id="chipAge">P56</div>
+          <div class="chip">JAX #038934</div>
+          <div class="chip" id="chipMouse">Htr2a-EGFP-CT-IRES-CreERT2</div>
+        </div>
+        <div class="drawer" id="displayDrawer">
+          <h3>Display</h3>
+          <div class="row">
+            <label><span>GFP brightness</span><span id="gBrightVal">100%</span></label>
+            <input type="range" id="gBright" min="40" max="180" value="100">
+          </div>
+          <div class="row">
+            <label><span>tdTom brightness</span><span id="rBrightVal">100%</span></label>
+            <input type="range" id="rBright" min="40" max="180" value="100">
+          </div>
+          <div class="row">
+            <label><span>GFP opacity</span><span id="gOpacityVal">100%</span></label>
+            <input type="range" id="gOpacity" min="0" max="100" value="100">
+          </div>
+          <div class="row">
+            <label><span>tdTom opacity</span><span id="rOpacityVal">72%</span></label>
+            <input type="range" id="rOpacity" min="0" max="100" value="72">
+          </div>
+          <button class="resetBtn" id="resetDisplay">Reset display</button>
+        </div>
+      </div>
+      <div class="controlsBar">
+        <button class="modebtn g" id="modeG">GFP only</button>
+        <button class="modebtn r" id="modeR">tdTomato only</button>
+        <button class="modebtn m" id="modeM">Merge</button>
+        <div class="spacer"></div>
+        <button class="panelbtn" id="resetViewBtn">Reset zoom</button>
+      </div>
+    </section>
+
+    <aside class="metaCard">
+      <div class="metaHdr">
+        <h2>Section Metadata</h2>
+        <p>Two-channel presentation with single-channel-style display controls.</p>
+      </div>
+      <div class="metaBody">
+        <div class="kv">
+          <div class="k">Section ID</div><div class="v" id="metaSection">TC-1_01</div>
+          <div class="k">Index</div><div class="v" id="metaIndex">1 / 38</div>
+          <div class="k">Mouse line</div><div class="v">Htr2a-EGFP-CT-IRES-CreERT2</div>
+          <div class="k">Sample</div><div class="v">2ACxAi9 TAMII-1</div>
+          <div class="k">Age</div><div class="v">P56</div>
+          <div class="k">Ch1</div><div class="v g">GFP · EGFP-CT</div>
+          <div class="k">Ch2</div><div class="v r">tdTomato</div>
+          <div class="k">Mode</div><div class="v m" id="metaMode">Merge</div>
+          <div class="k">Availability</div><div class="v"><a href="https://www.jax.org/strain/038934" target="_blank" rel="noopener noreferrer">Available from JAX Laboratory</a></div>
+        </div>
+        <div class="metaBlock">
+          <h3>Display notes</h3>
+          <div class="note">
+            The top image remains the full whole-brain section and supports deep zoom. Use GFP / tdTomato / Merge at the bottom to present each channel cleanly while keeping the same field of view. The lower filmstrip serves as the overview browser.
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="stripCard">
+    <div class="stripHead">
+      <span>Overview browser — merged thumbnails</span>
+      <span>Click to navigate · Shift + wheel to browse sections</span>
+    </div>
+    <div class="filmstrip" id="filmstrip"></div>
+  </section>
+</div>
+
 <script>
 const SECTIONS = [
   'TC-1_01','TC-1_02','TC-1_03','TC-1_04','TC-1_05','TC-1_06','TC-1_07','TC-1_08','TC-1_09','TC-1_10',
@@ -78,88 +209,18 @@ const gfpFull = s => `Images/full/${s}.jpg`;
 const redFull = s => `Images_tdTomato/full/${s}.jpg`;
 const gfpDzi = s => `Tiles/${s}.dzi`;
 const redDzi = s => `Images_tdTomato/Tiles/${s}.dzi`;
+
 let idx = 0;
 let mode = 'merge';
-let viewer, itemG = null, itemR = null;
-let sectionToken = 0;
-function q(name){ return new URL(location.href).searchParams.get(name); }
-function setQuery(section){ const u = new URL(location.href); u.searchParams.set('section', section); history.replaceState({},'',u); }
-async function exists(url){ try{ const r = await fetch(url,{method:'HEAD'}); return r.ok; }catch{ return false; } }
-function imgTile(url){ return {type:'image', url, buildPyramid:false}; }
-function preloadNeighbors(i){ [i-1,i+1].filter(n=>n>=0 && n<SECTIONS.length).forEach(n=>{
-  const ig = new Image(); ig.src = gfpThumb(SECTIONS[n]);
-  const ir = new Image(); ir.src = redThumb(SECTIONS[n]);
-}); }
-function updateSliderLabels(){
-  document.getElementById('gOpacityNum').textContent = `${document.getElementById('gOpacity').value}%`;
-  document.getElementById('rOpacityNum').textContent = `${document.getElementById('rOpacity').value}%`;
-  document.getElementById('gBrightNum').textContent = `${document.getElementById('gBright').value}%`;
-  document.getElementById('rBrightNum').textContent = `${document.getElementById('rBright').value}%`;
-}
-function applyMode(){
-  if(!itemG || !itemR) return;
-  updateSliderLabels();
-  const gOpacity = Number(document.getElementById('gOpacity').value)/100;
-  const rOpacity = Number(document.getElementById('rOpacity').value)/100;
-  const gBright = Number(document.getElementById('gBright').value)/100;
-  const rBright = Number(document.getElementById('rBright').value)/100;
-  if(mode==='gfp'){ itemG.setOpacity(1); itemR.setOpacity(0); }
-  if(mode==='tdt'){ itemG.setOpacity(0); itemR.setOpacity(1); }
-  if(mode==='merge'){ itemG.setOpacity(gOpacity); itemR.setOpacity(rOpacity); }
-  const gEl = itemG.getElement(); const rEl = itemR.getElement();
-  if(gEl) gEl.style.filter = `brightness(${gBright})`;
-  if(rEl) rEl.style.filter = `brightness(${rBright})`;
-  document.querySelectorAll('.modebtn').forEach(b=>b.classList.remove('active','g','r','m'));
-  const btn = document.querySelector(`[data-mode="${mode}"]`);
-  if(btn){ btn.classList.add('active'); btn.classList.add(mode==='gfp'?'g':mode==='tdt'?'r':'m'); }
-  document.getElementById('modeChip').textContent = mode==='gfp' ? 'GFP' : mode==='tdt' ? 'tdTomato' : 'Merge';
-  document.getElementById('modeChip').style.color = mode==='gfp' ? 'var(--gfp)' : mode==='tdt' ? 'var(--tdt)' : 'var(--merge)';
-}
-async function openSection(i, preserveView=false){
-  idx = Math.max(0, Math.min(SECTIONS.length-1, i));
-  const token = ++sectionToken;
-  const s = SECTIONS[idx];
-  document.getElementById('sectionTitle').textContent = `Section ${idx+1} / ${SECTIONS.length} · ${s}`;
-  document.getElementById('sectionMeta').textContent = `2ACxAi9 TAMII-1 · Htr2a-EGFP-CT-IRES-CreERT2`;
-  document.getElementById('counter').textContent = `${idx+1} / ${SECTIONS.length}`;
-  setQuery(s);
-  preloadNeighbors(idx);
-  const [hasGDzi, hasRDzi] = await Promise.all([exists(gfpDzi(s)), exists(redDzi(s))]);
-  if(token !== sectionToken) return;
-  const srcObjG = hasGDzi ? gfpDzi(s) : imgTile(gfpFull(s));
-  const srcObjR = hasRDzi ? redDzi(s) : imgTile(redFull(s));
-  const oldCenter = preserveView && viewer.world.getItemCount() ? viewer.viewport.getCenter(true) : null;
-  const oldZoom = preserveView && viewer.world.getItemCount() ? viewer.viewport.getZoom(true) : null;
-  viewer.world.removeAll();
-  itemG = null; itemR = null;
-  let opened = 0;
-  const finishOpen = () => {
-    opened += 1;
-    if(opened < 2) return;
-    applyMode();
-    if(oldCenter && oldZoom){
-      viewer.viewport.zoomTo(oldZoom, null, true);
-      viewer.viewport.panTo(oldCenter, true);
-    } else {
-      viewer.viewport.goHome(true);
-    }
-  };
-  viewer.addTiledImage({ tileSource: srcObjG, opacity: 1, preload:true, success: e => { if(token !== sectionToken) return; itemG = e.item; finishOpen(); } });
-  viewer.addTiledImage({ tileSource: srcObjR, opacity: .78, preload:true, success: e => { if(token !== sectionToken) return; itemR = e.item; finishOpen(); } });
-  document.querySelectorAll('.thumb').forEach((el,j)=>el.classList.toggle('active', j===idx));
-  document.querySelectorAll('.thumb')[idx]?.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
-}
-function buildStrip(){
-  const strip = document.getElementById('filmstrip');
-  SECTIONS.forEach((s,i)=>{
-    const d = document.createElement('div'); d.className='thumb'; d.onclick=()=>openSection(i);
-    d.innerHTML = `<div class="mthumb"><img class="g" src="${gfpThumb(s)}" loading="lazy"><img class="r" src="${redThumb(s)}" loading="lazy"></div><div class="tfoot"><div class="tname">${s}</div><div class="tsub">#${i+1}</div></div>`;
-    d.querySelector('.g').addEventListener('error',e=>e.target.style.display='none');
-    d.querySelector('.r').addEventListener('error',e=>e.target.style.display='none');
-    strip.appendChild(d);
-  });
-}
-function init(){
+let viewer;
+let gItem = null;
+let rItem = null;
+let gIsTile = false;
+let rIsTile = false;
+let sourceCache = new Map();
+let lastBrowseWheel = 0;
+
+function initViewer(){
   viewer = OpenSeadragon({
     id:'viewer',
     prefixUrl:'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/',
@@ -168,81 +229,231 @@ function init(){
     navigatorPosition:'BOTTOM_RIGHT',
     visibilityRatio:1,
     constrainDuringPan:true,
+    zoomPerScroll:1.15,
+    animationTime:0.55,
+    blendTime:0.08,
+    springStiffness:9.5,
+    maxZoomPixelRatio:6,
+    minZoomLevel:0.75,
     gestureSettingsMouse:{clickToZoom:false,dblClickToZoom:true,scrollToZoom:true},
-    gestureSettingsTouch:{pinchToZoom:true,clickToZoom:false,dblClickToZoom:true,flickEnabled:true},
-    maxZoomPixelRatio:8,
-    minZoomLevel:.7,
-    animationTime:.95,
-    blendTime:.08,
-    springStiffness:7.5,
-    maxImageCacheCount:600,
-    imageLoaderLimit:8,
-    timeout:15000,
-    preload:true,
-    immediateRender:false
+    gestureSettingsTouch:{pinchToZoom:true,flickEnabled:true,clickToZoom:false,dblClickToZoom:true}
   });
-  buildStrip();
-  viewer.addHandler('animation', ()=>{ if(viewer?.viewport) document.getElementById('zoomInfo').textContent = `zoom: ${viewer.viewport.getZoom(true).toFixed(2)}x`; });
-  viewer.addHandler('canvas-scroll', e=>{ if(e.originalEvent?.shiftKey){ e.preventDefaultAction = true; openSection(idx + (e.scroll < 0 ? 1 : -1)); } });
-  viewer.addHandler('canvas-double-click', ()=>{});
-  viewer.addHandler('canvas-enter', ()=>document.getElementById('hintInfo').textContent = 'double-click: smooth zoom');
-  document.querySelectorAll('.modebtn').forEach(btn=>btn.onclick=()=>{ mode=btn.dataset.mode; applyMode(); });
-  document.getElementById('prevBtn').onclick=()=>openSection(idx-1);
-  document.getElementById('nextBtn').onclick=()=>openSection(idx+1);
-  document.getElementById('fitBtn').onclick=()=>viewer.viewport.goHome(true);
-  document.getElementById('resetBtn').onclick=()=>{ document.getElementById('gOpacity').value=100; document.getElementById('rOpacity').value=78; document.getElementById('gBright').value=100; document.getElementById('rBright').value=100; applyMode(); viewer.viewport.goHome(true); };
-  document.getElementById('drawerBtn').onclick=()=>document.getElementById('drawer').classList.toggle('open');
-  ['gOpacity','rOpacity','gBright','rBright'].forEach(id=>document.getElementById(id).oninput=applyMode);
-  document.addEventListener('keydown',e=>{
-    if(e.key==='ArrowRight') openSection(idx+1,true);
-    if(e.key==='ArrowLeft') openSection(idx-1,true);
+
+  viewer.addHandler('mouse-move', evt => updateCoords(evt.position));
+  viewer.addHandler('animation', () => updateCoords());
+  viewer.addHandler('canvas-scroll', evt => {
+    const oe = evt.originalEvent;
+    if(oe && oe.shiftKey){
+      evt.preventDefaultAction = true;
+      browseByWheel(evt.scroll > 0 ? -1 : 1);
+    }
   });
-  idx = Math.max(0, SECTIONS.indexOf(q('section')));
-  if(idx<0) idx=0;
-  openSection(idx);
 }
-</script>
-<div class="app">
-  <div class="topbar">
-    <div>
-      <div class="title" id="sectionTitle">Section</div>
-      <div class="meta" id="sectionMeta"></div>
-    </div>
-    <a class="topbtn" href="index.html">Overview</a>
-    <button class="topbtn" id="prevBtn">◀ Prev</button>
-    <div class="chip" id="counter">1 / 38</div>
-    <button class="topbtn" id="nextBtn">Next ▶</button>
-  </div>
-  <div class="stage">
-    <div id="viewer"></div>
-    <div class="drawer" id="drawer">
-      <h3>Display</h3>
-      <div class="row"><label><span>GFP opacity</span><span id="gOpacityNum">100%</span></label><input id="gOpacity" type="range" min="0" max="100" value="100"></div>
-      <div class="row"><label><span>tdTom opacity</span><span id="rOpacityNum">78%</span></label><input id="rOpacity" type="range" min="0" max="100" value="78"></div>
-      <div class="row"><label><span>GFP brightness</span><span id="gBrightNum">100%</span></label><input id="gBright" type="range" min="50" max="180" value="100"></div>
-      <div class="row"><label><span>tdTom brightness</span><span id="rBrightNum">100%</span></label><input id="rBright" type="range" min="50" max="180" value="100"></div>
-    </div>
-    <div class="viewer-overlay">
-      <div class="infochip" id="modeChip">Merge</div>
-      <div class="infochip" id="hintInfo">Shift+wheel: browse sections</div>
-      <div class="infochip" id="zoomInfo">zoom: 1.00x</div>
-    </div>
-  </div>
-  <div>
-    <div class="controls">
-      <div class="modegroup">
-        <button class="modebtn" data-mode="gfp">🟢 GFP</button>
-        <button class="modebtn" data-mode="tdt">🔴 tdTomato</button>
-        <button class="modebtn" data-mode="merge">🟡 Merge</button>
+
+function browseByWheel(step){
+  const now = Date.now();
+  if(now - lastBrowseWheel < 150) return;
+  lastBrowseWheel = now;
+  openSection(idx + step);
+}
+
+async function exists(url){
+  if(sourceCache.has(url)) return sourceCache.get(url);
+  try{
+    const r = await fetch(url,{method:'HEAD'});
+    sourceCache.set(url,r.ok);
+    return r.ok;
+  }catch(e){
+    sourceCache.set(url,false);
+    return false;
+  }
+}
+
+async function buildSource(section, channel){
+  if(channel === 'g'){
+    if(await exists(gfpDzi(section))) return {type:'dzi',url:gfpDzi(section),tile:true};
+    return {type:'image',url:gfpFull(section),tile:false};
+  }
+  if(await exists(redDzi(section))) return {type:'dzi',url:redDzi(section),tile:true};
+  return {type:'image',url:redFull(section),tile:false};
+}
+
+function osdSource(src){
+  return src.type === 'dzi' ? {type:'dzi',url:src.url} : {type:'image',url:src.url,buildPyramid:false};
+}
+
+async function openSection(i, replaceUrl=true){
+  idx = Math.max(0,Math.min(SECTIONS.length-1,i));
+  const section = SECTIONS[idx];
+  const [gSrc,rSrc] = await Promise.all([buildSource(section,'g'), buildSource(section,'r')]);
+  gIsTile = gSrc.tile; rIsTile = rSrc.tile;
+
+  const preserve = viewer && viewer.world.getItemCount() > 0;
+  let center = null, zoom = null;
+  if(preserve){
+    center = viewer.viewport.getCenter(true);
+    zoom = viewer.viewport.getZoom(true);
+  }
+
+  viewer.world.removeAll();
+  viewer.open([osdSource(gSrc), osdSource(rSrc)]);
+  viewer.addOnceHandler('open', () => {
+    gItem = viewer.world.getItemAt(0);
+    rItem = viewer.world.getItemAt(1);
+    if(preserve && center && zoom){
+      viewer.viewport.panTo(center,true);
+      viewer.viewport.zoomTo(zoom, null, true);
+    }else{
+      viewer.viewport.goHome(true);
+    }
+    applyDisplay();
+    updateMeta(section);
+    highlightThumb();
+    preloadNeighbors();
+  });
+
+  if(replaceUrl){
+    const url = new URL(window.location.href);
+    url.searchParams.set('section', section);
+    history.replaceState({},'',url);
+  }
+}
+
+function applyDisplay(){
+  const gBright = Number(document.getElementById('gBright').value)/100;
+  const rBright = Number(document.getElementById('rBright').value)/100;
+  const gOpacityBase = Number(document.getElementById('gOpacity').value)/100;
+  const rOpacityBase = Number(document.getElementById('rOpacity').value)/100;
+
+  document.getElementById('gBrightVal').textContent = `${Math.round(gBright*100)}%`;
+  document.getElementById('rBrightVal').textContent = `${Math.round(rBright*100)}%`;
+  document.getElementById('gOpacityVal').textContent = `${Math.round(gOpacityBase*100)}%`;
+  document.getElementById('rOpacityVal').textContent = `${Math.round(rOpacityBase*100)}%`;
+
+  if(!gItem || !rItem) return;
+
+  let gOpacity = 1, rOpacity = 0;
+  if(mode === 'g'){ gOpacity = 1; rOpacity = 0; }
+  else if(mode === 'r'){ gOpacity = 0; rOpacity = 1; }
+  else { gOpacity = gOpacityBase; rOpacity = rOpacityBase; }
+
+  gItem.setOpacity(gOpacity);
+  rItem.setOpacity(rOpacity);
+
+  // Keep per-channel brightness simple and presentation-oriented via CSS brightness approximation
+  const gEl = gItem.source && gItem.source.canvas ? gItem.source.canvas : null;
+  const rEl = rItem.source && rItem.source.canvas ? rItem.source.canvas : null;
+  if(gEl) gEl.style && (gEl.style.filter = `brightness(${gBright})`);
+  if(rEl) rEl.style && (rEl.style.filter = `brightness(${rBright})`);
+
+  document.getElementById('chipChannel').textContent = mode === 'g' ? 'GFP only' : mode === 'r' ? 'tdTomato only' : 'Merge';
+  document.getElementById('chipChannel').className = 'chip ' + (mode === 'g' ? 'g' : mode === 'r' ? 'r' : 'm');
+  document.getElementById('metaMode').textContent = mode === 'g' ? 'GFP only' : mode === 'r' ? 'tdTomato only' : 'Merge';
+  document.getElementById('metaMode').className = 'v ' + (mode === 'g' ? 'g' : mode === 'r' ? 'r' : 'm');
+
+  document.getElementById('modeG').className = 'modebtn g' + (mode === 'g' ? ' active g' : '');
+  document.getElementById('modeR').className = 'modebtn r' + (mode === 'r' ? ' active r' : '');
+  document.getElementById('modeM').className = 'modebtn m' + (mode === 'merge' ? ' active m' : '');
+
+  document.getElementById('statusChip').textContent = (gIsTile && (mode !== 'r')) || (rIsTile && (mode !== 'g')) ? 'DZI tiles' : 'JPG fallback';
+}
+
+function updateMeta(section){
+  document.getElementById('titleLine').textContent = `Section ${idx+1} / ${SECTIONS.length} · ${section}`;
+  document.getElementById('chipSection').textContent = section;
+  document.getElementById('metaSection').textContent = section;
+  document.getElementById('metaIndex').textContent = `${idx+1} / ${SECTIONS.length}`;
+}
+
+function updateCoords(pixel){
+  if(!viewer || !viewer.viewport) return;
+  const zoom = viewer.viewport.getZoom(true);
+  if(pixel){
+    const p = viewer.viewport.pointFromPixel(pixel);
+    document.getElementById('chipCoords').textContent = `x: ${p.x.toFixed(3)}  y: ${p.y.toFixed(3)}  zoom: ${zoom.toFixed(2)}x`;
+  }else{
+    document.getElementById('chipCoords').textContent = `x: —  y: —  zoom: ${zoom.toFixed(2)}x`;
+  }
+}
+
+function buildFilmstrip(){
+  const strip = document.getElementById('filmstrip');
+  strip.innerHTML = '';
+  SECTIONS.forEach((section, i) => {
+    const card = document.createElement('div');
+    card.className = 'thumb';
+    card.onclick = () => openSection(i);
+    card.innerHTML = `
+      <div class="mthumb">
+        <img class="g" src="${gfpThumb(section)}" alt="${section} GFP" onerror="this.src='${gfpFull(section)}'">
+        <img class="r" src="${redThumb(section)}" alt="${section} tdTomato" onerror="this.src='${redFull(section)}'">
       </div>
-      <div class="spacer"></div>
-      <button class="smallbtn" id="fitBtn">Fit</button>
-      <button class="smallbtn" id="resetBtn">Reset</button>
-      <button class="panelbtn" id="drawerBtn">Display</button>
-    </div>
-    <div class="filmstrip" id="filmstrip"></div>
-  </div>
-</div>
-<script>init();</script>
+      <div class="tfoot">
+        <div class="tname">${section}</div>
+        <div class="tsub">#${i+1}</div>
+      </div>`;
+    strip.appendChild(card);
+  });
+}
+
+function highlightThumb(){
+  document.querySelectorAll('.thumb').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+    if(i === idx) el.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  });
+}
+
+function preloadNeighbors(){
+  [idx-1, idx+1].filter(i => i >= 0 && i < SECTIONS.length).forEach(i => {
+    const s = SECTIONS[i];
+    const img1 = new Image(); img1.src = gfpThumb(s);
+    const img2 = new Image(); img2.src = redThumb(s);
+  });
+}
+
+function currentIndexFromURL(){
+  const q = new URLSearchParams(window.location.search).get('section');
+  const i = SECTIONS.indexOf(q);
+  return i >= 0 ? i : 0;
+}
+
+function setMode(next){ mode = next; applyDisplay(); }
+
+function resetDisplay(){
+  document.getElementById('gBright').value = 100;
+  document.getElementById('rBright').value = 100;
+  document.getElementById('gOpacity').value = 100;
+  document.getElementById('rOpacity').value = 72;
+  applyDisplay();
+}
+
+window.addEventListener('load', async () => {
+  initViewer();
+  buildFilmstrip();
+  idx = currentIndexFromURL();
+  await openSection(idx, false);
+
+  document.getElementById('modeG').onclick = () => setMode('g');
+  document.getElementById('modeR').onclick = () => setMode('r');
+  document.getElementById('modeM').onclick = () => setMode('merge');
+  document.getElementById('prevTop').onclick = () => openSection(idx - 1);
+  document.getElementById('nextTop').onclick = () => openSection(idx + 1);
+  document.getElementById('fitBtn').onclick = () => viewer.viewport.goHome(true);
+  document.getElementById('resetViewBtn').onclick = () => viewer.viewport.goHome(true);
+  document.getElementById('copyTop').onclick = async () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('section', SECTIONS[idx]);
+    await navigator.clipboard.writeText(url.toString());
+  };
+  document.getElementById('displayBtn').onclick = () => document.getElementById('displayDrawer').classList.toggle('open');
+  document.getElementById('resetDisplay').onclick = resetDisplay;
+  ['gBright','rBright','gOpacity','rOpacity'].forEach(id => document.getElementById(id).oninput = applyDisplay);
+
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowRight') openSection(idx + 1);
+    if(e.key === 'ArrowLeft') openSection(idx - 1);
+  });
+});
+</script>
 </body>
 </html>
