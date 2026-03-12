@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Viewer — Htr2a-EGFP-CT-IRES-CreERT2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
+<style>
+:root{
+  --bg:#04070c; --panel:#09101d; --panel2:#0e1628; --line:#1f2b44;
+  --text:#eaf0ff; --muted:#7c89a7; --gfp:#78ff5a; --tdt:#ff5a7c; --merge:#ffe55a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:radial-gradient(circle at top,#09111e,#03060a 60%);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;overflow:hidden}
+button{font:inherit}
+.app{display:grid;grid-template-rows:86px 1fr 102px;height:100vh}
+.topbar{display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);background:rgba(8,12,21,.88)}
+.title{font-size:18px;font-weight:800;letter-spacing:.01em}
+.meta{margin-top:6px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px}
+.topbtn,.chip{height:42px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:rgba(15,22,38,.72);color:var(--text)}
+.topbtn{cursor:pointer}
+.topbtn:hover{border-color:#3e4d73}
+.chip{display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--gfp)}
+.stage{position:relative;min-height:0;background:#000}
+#viewer{position:absolute;inset:0}
+#viewer .openseadragon-container,.openseadragon-canvas{background:#000 !important}
+.viewer-overlay{position:absolute;left:20px;bottom:18px;display:flex;gap:10px;z-index:20}
+.infochip{padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(9,13,22,.72);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:#aab5d0}
+.controls{display:flex;align-items:center;gap:12px;padding:16px 22px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(8,12,21,.96)}
+.modegroup{display:flex;gap:10px}
+.modebtn{height:44px;padding:0 18px;border-radius:14px;border:1px solid var(--line);background:rgba(15,22,38,.8);color:#cdd6ee;cursor:pointer;font-weight:700}
+.modebtn:hover{border-color:#44557f}
+.modebtn.active.g{color:var(--gfp);border-color:rgba(120,255,90,.35);background:rgba(120,255,90,.08)}
+.modebtn.active.r{color:var(--tdt);border-color:rgba(255,90,124,.35);background:rgba(255,90,124,.08)}
+.modebtn.active.m{color:var(--merge);border-color:rgba(255,229,90,.35);background:rgba(255,229,90,.08)}
+.spacer{flex:1}
+.smallbtn{height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:rgba(15,22,38,.8);color:#cdd6ee;cursor:pointer}
+.panelbtn{height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:rgba(18,30,50,.86);color:#d9e2ff;cursor:pointer}
+.drawer{position:absolute;right:18px;top:18px;width:290px;background:rgba(8,12,21,.96);border:1px solid var(--line);border-radius:18px;padding:16px;z-index:30;display:none;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.drawer.open{display:block}
+.drawer h3{margin:0 0 14px;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#93a1c2}
+.row{margin-bottom:14px}
+.row label{display:flex;justify-content:space-between;margin-bottom:8px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:#d7dff8}
+.row input{width:100%}
+input[type=range]{accent-color:#b0b9cc}
+.filmstrip{display:flex;gap:10px;overflow-x:auto;padding:16px 18px;background:rgba(6,10,18,.96)}
+.filmstrip::-webkit-scrollbar{height:8px}.filmstrip::-webkit-scrollbar-thumb{background:#20304d;border-radius:999px}
+.thumb{flex:0 0 114px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#090d16;cursor:pointer;transition:border-color .14s ease, transform .14s ease}
+.thumb:hover{border-color:#45537c;transform:translateY(-1px)}
+.thumb.active{border-color:var(--gfp);box-shadow:0 0 0 1px rgba(120,255,90,.18) inset}
+.mthumb{position:relative;aspect-ratio:4/3;background:#000}
+.mthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.mthumb .g{mix-blend-mode:screen;opacity:1}
+.mthumb .r{mix-blend-mode:screen;opacity:.78}
+.tfoot{padding:8px 10px 10px;background:rgba(12,18,31,.94)}
+.tname{font-size:14px;font-weight:700}
+.tsub{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:11px;margin-top:3px}
+@media (max-width: 900px){
+  .app{grid-template-rows:94px 1fr 120px}
+  .topbar{grid-template-columns:1fr auto;grid-auto-rows:auto}
+  .controls{flex-wrap:wrap}
+  .drawer{left:12px;right:12px;width:auto}
+}
+</style>
+</head>
+<body>
+<script>
+const SECTIONS = [
+  'TC-1_01','TC-1_02','TC-1_03','TC-1_04','TC-1_05','TC-1_06','TC-1_07','TC-1_08','TC-1_09','TC-1_10',
+  'TC-2_02','TC-2_03','TC-2_04','TC-2_05','TC-2_06','TC-2_07','TC-2_08','TC-2_09',
+  'TC-3_02','TC-3_03','TC-3_04','TC-3_05','TC-3_06','TC-3_07','TC-3_08','TC-3_09',
+  'TC-4_02','TC-4_03','TC-4_04','TC-4_05','TC-4_06','TC-4_07','TC-4_08','TC-4_09',
+  'TC-5_02','TC-5_03','TC-5_09','TC-5_10'
+];
+const gfpThumb = s => `Images/thumbs/${s}.jpg`;
+const redThumb = s => `Images_tdTomato/Thumbs/${s}.jpg`;
+const gfpFull = s => `Images/full/${s}.jpg`;
+const redFull = s => `Images_tdTomato/full/${s}.jpg`;
+const gfpDzi = s => `Tiles/${s}.dzi`;
+const redDzi = s => `Images_tdTomato/Tiles/${s}.dzi`;
+let idx = 0;
+let mode = 'merge';
+let viewer, itemG, itemR;
+function q(name){ return new URL(location.href).searchParams.get(name); }
+function setQuery(section){
+  const u = new URL(location.href); u.searchParams.set('section', section); history.replaceState({},'',u);
+}
+async function exists(url){ try{ const r = await fetch(url,{method:'HEAD'}); return r.ok; }catch{ return false; } }
+function makeSource(url, isDzi){ return isDzi ? {type:'image', tileSource:url} : {type:'image', url, buildPyramid:false}; }
+async function openSection(i){
+  idx = Math.max(0, Math.min(SECTIONS.length-1, i));
+  const s = SECTIONS[idx];
+  document.getElementById('sectionTitle').textContent = `Section ${idx+1} / ${SECTIONS.length} · ${s}`;
+  document.getElementById('sectionMeta').textContent = `2ACxAi9 TAMII-1 · Htr2a-EGFP-CT-IRES-CreERT2 · Merge default`;
+  document.getElementById('counter').textContent = `${idx+1} / ${SECTIONS.length}`;
+  setQuery(s);
+  const [hasGDzi, hasRDzi] = await Promise.all([exists(gfpDzi(s)), exists(redDzi(s))]);
+  const srcG = hasGDzi ? gfpDzi(s) : gfpFull(s);
+  const srcR = hasRDzi ? redDzi(s) : redFull(s);
+  const srcObjG = hasGDzi ? srcG : {type:'image',url:srcG,buildPyramid:false};
+  const srcObjR = hasRDzi ? srcR : {type:'image',url:srcR,buildPyramid:false};
+  viewer.world.removeAll();
+  viewer.addTiledImage({ tileSource: srcObjG, opacity: 1, success: e => { itemG = e.item; applyMode(); viewer.viewport.goHome(true);} });
+  viewer.addTiledImage({ tileSource: srcObjR, opacity: .78, success: e => { itemR = e.item; applyMode(); } });
+  document.querySelectorAll('.thumb').forEach((el,j)=>el.classList.toggle('active', j===idx));
+  document.querySelectorAll('.thumb')[idx]?.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+}
+function applyMode(){
+  if(!itemG || !itemR) return;
+  const gOpacity = Number(document.getElementById('gOpacity').value)/100;
+  const rOpacity = Number(document.getElementById('rOpacity').value)/100;
+  const gBright = Number(document.getElementById('gBright').value)/100;
+  const rBright = Number(document.getElementById('rBright').value)/100;
+  if(mode==='gfp'){ itemG.setOpacity(1); itemR.setOpacity(0); }
+  if(mode==='tdt'){ itemG.setOpacity(0); itemR.setOpacity(1); }
+  if(mode==='merge'){ itemG.setOpacity(gOpacity); itemR.setOpacity(rOpacity); }
+  const gEl = itemG.getElement(); const rEl = itemR.getElement();
+  if(gEl) gEl.style.filter = `brightness(${gBright})`;
+  if(rEl) rEl.style.filter = `brightness(${rBright})`;
+  document.querySelectorAll('.modebtn').forEach(b=>b.classList.remove('active','g','r','m'));
+  const btn = document.querySelector(`[data-mode="${mode}"]`);
+  if(btn){ btn.classList.add('active'); btn.classList.add(mode==='gfp'?'g':mode==='tdt'?'r':'m'); }
+}
+function init(){
+  viewer = OpenSeadragon({
+    id:'viewer',
+    prefixUrl:'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/',
+    showNavigator:true, showNavigationControl:false, navigatorPosition:'BOTTOM_RIGHT',
+    visibilityRatio:1, constrainDuringPan:true, gestureSettingsMouse:{clickToZoom:false,dblClickToZoom:true,scrollToZoom:true},
+    maxZoomPixelRatio:6, minZoomLevel:.7, animationTime:.6, blendTime:.08
+  });
+  viewer.addHandler('canvas-double-click', ()=>{});
+  viewer.addHandler('animation', ()=>{ document.getElementById('zoomInfo').textContent = `zoom: ${viewer.viewport.getZoom(true).toFixed(2)}x`; });
+  viewer.addHandler('canvas-scroll', e=>{
+    if(e.originalEvent?.shiftKey){ e.preventDefaultAction = true; openSection(idx + (e.scroll < 0 ? 1 : -1)); }
+  });
+  const strip = document.getElementById('filmstrip');
+  SECTIONS.forEach((s,i)=>{
+    const d = document.createElement('div'); d.className='thumb'; d.onclick=()=>openSection(i);
+    d.innerHTML = `<div class="mthumb"><img class="g" src="${gfpThumb(s)}" loading="lazy"><img class="r" src="${redThumb(s)}" loading="lazy"></div><div class="tfoot"><div class="tname">${s}</div><div class="tsub">#${i+1}</div></div>`;
+    d.querySelector('.g').addEventListener('error',e=>e.target.style.display='none');
+    d.querySelector('.r').addEventListener('error',e=>e.target.style.display='none');
+    strip.appendChild(d);
+  });
+  document.querySelectorAll('.modebtn').forEach(btn=>btn.onclick=()=>{ mode=btn.dataset.mode; applyMode(); });
+  document.getElementById('prevBtn').onclick=()=>openSection(idx-1);
+  document.getElementById('nextBtn').onclick=()=>openSection(idx+1);
+  document.getElementById('fitBtn').onclick=()=>viewer.viewport.goHome(true);
+  document.getElementById('resetBtn').onclick=()=>{
+    document.getElementById('gOpacity').value=100; document.getElementById('rOpacity').value=78;
+    document.getElementById('gBright').value=100; document.getElementById('rBright').value=100; applyMode();
+  };
+  document.getElementById('drawerBtn').onclick=()=>document.getElementById('drawer').classList.toggle('open');
+  ['gOpacity','rOpacity','gBright','rBright'].forEach(id=>document.getElementById(id).oninput=applyMode);
+  document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight') openSection(idx+1); if(e.key==='ArrowLeft') openSection(idx-1); });
+  idx = Math.max(0, SECTIONS.indexOf(q('section')));
+  if(idx<0) idx=0;
+  openSection(idx);
+}
+</script>
+<div class="app">
+  <div class="topbar">
+    <div>
+      <div class="title" id="sectionTitle">Section</div>
+      <div class="meta" id="sectionMeta"></div>
+    </div>
+    <button class="topbtn" id="prevBtn">◀ Prev</button>
+    <div class="chip" id="counter">1 / 38</div>
+    <button class="topbtn" id="nextBtn">Next ▶</button>
+  </div>
+  <div class="stage">
+    <div id="viewer"></div>
+    <div class="drawer" id="drawer">
+      <h3>Display</h3>
+      <div class="row"><label><span>GFP opacity</span><span id="gOpacityVal">merge</span></label><input id="gOpacity" type="range" min="0" max="100" value="100"></div>
+      <div class="row"><label><span>tdTom opacity</span><span></span></label><input id="rOpacity" type="range" min="0" max="100" value="78"></div>
+      <div class="row"><label><span>GFP brightness</span><span></span></label><input id="gBright" type="range" min="50" max="180" value="100"></div>
+      <div class="row"><label><span>tdTom brightness</span><span></span></label><input id="rBright" type="range" min="50" max="180" value="100"></div>
+    </div>
+    <div class="viewer-overlay">
+      <div class="infochip">double-click: zoom</div>
+      <div class="infochip">drag: pan</div>
+      <div class="infochip" id="zoomInfo">zoom: 1.00x</div>
+    </div>
+  </div>
+  <div>
+    <div class="controls">
+      <div class="modegroup">
+        <button class="modebtn" data-mode="gfp">🟢 GFP</button>
+        <button class="modebtn" data-mode="tdt">🔴 tdTomato</button>
+        <button class="modebtn" data-mode="merge">🟡 Merge</button>
+      </div>
+      <div class="spacer"></div>
+      <button class="smallbtn" id="fitBtn">Fit</button>
+      <button class="smallbtn" id="resetBtn">Reset</button>
+      <button class="panelbtn" id="drawerBtn">Display</button>
+      <a class="smallbtn" style="display:inline-flex;align-items:center;text-decoration:none" href="index.html">Overview</a>
+    </div>
+    <div class="filmstrip" id="filmstrip"></div>
+  </div>
+</div>
+<script>init();</script>
+</body>
+</html>

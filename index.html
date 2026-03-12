@@ -2,879 +2,131 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>5-HT2A NeuroAtlas — Htr2a-EGFP-CT-IRES-CreERT2</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
 <style>
 :root{
-  --bg:#07090c; --surf:#0c0f15; --surf2:#12161e; --bdr:#1a1f2c; --bdr2:#222a3a;
-  --txt:#dde2ec; --txt2:#8a95af; --txt3:#556178;
-  --gfp:#55CF1A; --red:#e05555; --merge:#d4a0d4; --side:#95AAD3; --warn:#bf4567;
+  --bg:#06080d; --panel:#0b1020; --panel2:#10182b; --line:#1f2a44;
+  --text:#e9eefc; --muted:#7e8aa8; --gfp:#78ff5a; --tdt:#ff5a7c; --merge:#ffe55a;
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(85,207,26,.05),transparent);pointer-events:none}
+html,body{margin:0;background:linear-gradient(180deg,#05070c,#081019);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
 a{color:inherit;text-decoration:none}
-.app{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:300px 1fr}
-.sidebar{background:var(--surf);border-right:1px solid var(--bdr);padding:18px 0;display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh;overflow-y:auto}
-.logo{padding:0 16px 16px;border-bottom:1px solid var(--bdr)}
-.brand a{display:flex;align-items:center;gap:8px}
-.pulse{width:8px;height:8px;border-radius:50%;background:var(--gfp);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.55)}}
-.atlas-name{color:var(--gfp);font-size:18px;font-weight:700}
-.subline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gfp);margin-top:6px}
-.monoline{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);margin-top:3px}
-.ssec{padding:18px 16px 8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3)}
-.sitem{margin:0 7px 3px;padding:12px 14px;border-radius:12px;color:var(--txt2);cursor:pointer;font-size:15px;border:1px solid transparent;transition:.15s}
-.sitem:hover{background:var(--surf2);color:var(--txt)}
-.sitem.on{background:rgba(85,207,26,.08);color:var(--gfp);border-color:rgba(85,207,26,.2)}
-.sitem-info{margin:0 7px 3px;padding:8px 14px;border-radius:8px;color:var(--txt3);font-size:13px;font-family:'JetBrains Mono',monospace;line-height:1.65}
-.sitem-info span{color:var(--txt2)}
-.spacer{flex:1}
-.back-link{margin:0 7px 8px;padding:12px 14px;border-radius:12px;color:var(--txt3);font-size:13px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:6px;border:1px solid var(--bdr);cursor:pointer;transition:.15s}
-.back-link:hover{border-color:var(--gfp);color:var(--gfp)}
-
-.main{padding:22px 26px 20px;min-width:0}
-.topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
-.title{font-size:30px;font-weight:700;letter-spacing:-.02em}
-.title em{font-style:normal;color:var(--gfp)}
-.subtitle{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--txt3);margin-top:6px}
-.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.stat{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:12px 16px;min-width:115px}
-.stat .n{font-size:20px;font-weight:700}
-.stat .l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-
-.channel-bar{display:flex;gap:8px;margin:14px 0 14px;flex-wrap:wrap;justify-content:flex-start}
-.ch-btn{
-  font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 14px;
-  border-radius:9px;border:1px solid var(--bdr2);background:var(--surf);
-  color:var(--txt2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:7px
-}
-.ch-btn:hover{border-color:var(--txt3);color:var(--txt)}
-.ch-btn.active-gfp{background:rgba(85,207,26,.1);border-color:rgba(85,207,26,.3);color:var(--gfp)}
-.ch-btn.active-red{background:rgba(224,85,85,.1);border-color:rgba(224,85,85,.3);color:var(--red)}
-.ch-btn.active-merge{background:rgba(212,160,212,.1);border-color:rgba(212,160,212,.3);color:var(--merge)}
-.ch-btn.active-side{background:rgba(149,170,211,.1);border-color:rgba(149,170,211,.3);color:var(--side)}
-.ch-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px}
-.card{background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;overflow:hidden}
-.cardhdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.cardtitle{font-size:14px;font-weight:700}
-.cardsub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-top:3px}
-.badge{margin-left:auto;background:rgba(85,207,26,.08);border:1px solid rgba(85,207,26,.15);color:var(--gfp);font-family:'JetBrains Mono',monospace;font-size:9px;border-radius:6px;padding:4px 10px;white-space:nowrap}
-
-.viewerwrap,.side-wrap{position:relative;height:68vh;background:#000}
-#single-wrap{display:block}
-#side-wrap{display:none}
-#viewer-main,#viewer-overlay,#viewer-gfp-side,#viewer-red-side{width:100%;height:100%}
-#merge-stack{position:absolute;inset:0}
-#viewer-main-wrap{position:absolute;inset:0}
-#viewer-overlay-wrap{
-  position:absolute;inset:0;pointer-events:none;
-  mix-blend-mode:screen;opacity:1;
-}
-.side-wrap.active{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.side-panel{position:relative;background:#000}
-.side-label{position:absolute;top:8px;left:8px;z-index:30;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;background:rgba(12,15,21,.85);border:1px solid var(--bdr2)}
-.overlay{position:absolute;left:10px;top:10px;display:flex;gap:6px;align-items:center;z-index:40;pointer-events:none;flex-wrap:wrap}
-.overlay-right{position:absolute;right:10px;top:10px;z-index:40;display:flex;gap:6px;flex-wrap:wrap}
-.overlay-bottom-left{position:absolute;left:10px;bottom:10px;z-index:40;display:flex;gap:6px;pointer-events:none;flex-wrap:wrap}
-.chip{font-family:'JetBrains Mono',monospace;font-size:8px;padding:4px 9px;border-radius:6px;background:rgba(12,15,21,.85);border:1px solid var(--bdr2);backdrop-filter:blur(4px);color:var(--gfp)}
-.chip.red{color:var(--red)}
-.chip.merge{color:var(--merge)}
-.chip.side{color:var(--side)}
-.chip.muted{color:var(--txt2)}
-.btn{background:rgba(12,15,21,.88);border:1px solid var(--bdr2);color:var(--txt2);border-radius:8px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:.15s}
-.btn:hover{border-color:var(--gfp);color:var(--gfp)}
-.btn.warn:hover{border-color:var(--warn);color:var(--warn)}
-.openseadragon-container,.openseadragon-canvas{background:#000 !important}
-.openseadragon-container .navigator{border:1px solid rgba(255,255,255,.18)!important;background:rgba(0,0,0,.18)!important}
-
-.panel{padding:14px}
-.kv{display:grid;grid-template-columns:100px 1fr;gap:6px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7}
-.kv .k{color:var(--txt3)}
-.kv .v{color:var(--txt)}
-.controls-section{margin-top:12px;border-top:1px solid var(--bdr);padding-top:10px}
-.ctrl-label{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px}
-.ctrl-section-label{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);margin:8px 0 4px;letter-spacing:.08em}
-.ctrl-section-label.gfp{color:var(--gfp)}
-.ctrl-section-label.red{color:var(--red)}
-.ctrl-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.ctrl-row label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt2);width:90px;flex-shrink:0}
-.ctrl-row .val{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--gfp);width:38px;text-align:right;flex-shrink:0}
-input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:var(--bdr2);border-radius:2px;outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gfp);cursor:pointer}
-input[type=range].red-slider::-webkit-slider-thumb{background:var(--red)}
-input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--gfp);border:none;cursor:pointer}
-.reset-btn{margin-top:6px;width:100%;background:transparent;border:1px solid var(--bdr2);color:var(--txt3);border-radius:6px;padding:7px;font-family:'JetBrains Mono',monospace;font-size:8px;cursor:pointer;transition:.15s}
-.reset-btn:hover{border-color:var(--txt3);color:var(--txt)}
-.note{margin-top:10px;background:rgba(85,207,26,.04);border:1px solid rgba(85,207,26,.1);border-radius:9px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:8.5px;line-height:1.7;color:var(--txt2)}
-
-
-.section-rail{
-  position:absolute;right:10px;bottom:58px;z-index:45;width:72px;max-height:62%;
-  background:rgba(12,15,21,.78);border:1px solid var(--bdr2);border-radius:12px;
-  backdrop-filter:blur(8px);padding:8px 6px;overflow-y:auto;
-}
-.section-rail::-webkit-scrollbar{width:4px}
-.section-rail::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
-.rail-title{
-  font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--txt3);padding:0 4px 6px
-}
-.rail-item{
-  font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt2);
-  padding:5px 6px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;
-  gap:6px;border:1px solid transparent;transition:.12s;
-}
-.rail-item:hover{background:var(--surf2);color:var(--txt)}
-.rail-item.on{background:rgba(85,207,26,.09);color:var(--gfp);border-color:rgba(85,207,26,.2)}
-.rail-item small{color:var(--txt3)}
-
-.stripcard{margin-top:12px}
-.striphdr{padding:8px 12px 0;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--txt3);text-transform:uppercase}
-.strip{display:flex;gap:5px;overflow-x:auto;padding:8px 12px 12px}
-.strip::-webkit-scrollbar{height:4px}
-.strip::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
-.thumb{flex:0 0 auto;width:84px;border-radius:7px;overflow:hidden;border:2px solid var(--bdr);background:#000;cursor:pointer;transition:.15s}
-.thumb:hover{border-color:var(--txt3)}
-.thumb.on{border-color:var(--gfp)}
-.thumb-pair{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#000}
-.thumb-pair img{display:block;width:100%;height:56px;object-fit:contain;background:#000}
-.thumb-channels{display:grid;grid-template-columns:1fr 1fr;gap:1px;padding:3px 4px;background:var(--surf2);font-family:'JetBrains Mono',monospace;font-size:7px}
-.thumb-channels span:first-child{color:var(--gfp)}
-.thumb-channels span:last-child{color:var(--red);text-align:right}
-.thumb label{display:block;padding:3px 4px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt3);background:var(--bg);cursor:pointer}
-.thumb.on label{color:var(--gfp)}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:12px;padding:12px}
-.gcard{background:var(--surf2);border:1px solid var(--bdr2);border-radius:12px;overflow:hidden;cursor:pointer;transition:.18s}
-.gcard:hover{transform:translateY(-2px);border-color:var(--gfp)}
-.grid-pair{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#000}
-.grid-pair img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#000}
-.grid-labels{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:4px 6px;font-family:'JetBrains Mono',monospace;font-size:8px}
-.grid-labels span:first-child{color:var(--gfp)}
-.grid-labels span:last-child{color:var(--red);text-align:right}
-.gfoot{padding:7px 9px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace}
-.gfoot .id{font-size:10px;color:var(--txt2)}
-.gfoot .n{font-size:8px;color:var(--txt3)}
-
-.hide{display:none!important}
-.toast{position:fixed;right:16px;bottom:16px;background:var(--surf);border:1px solid var(--gfp);border-radius:8px;padding:9px 13px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gfp);display:none;z-index:999}
-
-@media(max-width:980px){
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+.sidebar{background:rgba(8,12,20,.96);border-right:1px solid var(--line);padding:28px 22px;position:sticky;top:0;height:100vh}
+.brand{font-size:18px;font-weight:800;letter-spacing:.02em;color:var(--gfp);margin-bottom:8px}
+.sub{font-size:14px;color:var(--gfp);line-height:1.35;margin-bottom:8px}
+.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px;line-height:1.45}
+.sec{margin-top:34px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#59657f}
+.nav{margin-top:14px;display:grid;gap:10px}
+.nav a{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:rgba(22,36,62,.28);color:#b8c5e4}
+.nav a.active{background:linear-gradient(90deg,rgba(72,140,84,.35),rgba(22,36,62,.28));color:var(--gfp)}
+.main{padding:28px 30px 34px}
+.hero h1{margin:0;font-size:42px;line-height:1.05;letter-spacing:-.03em}
+.hero h1 .g{color:var(--gfp)}
+.hero h1 .r{color:var(--tdt)}
+.hero .meta{margin-top:10px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:13px}
+.topcard{margin-top:22px;background:rgba(9,14,25,.72);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.head{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;padding:18px 22px;border-bottom:1px solid var(--line)}
+.head h2{margin:0;font-size:20px}
+.head .hint{margin-top:6px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px}
+.badge{padding:10px 14px;border:1px solid rgba(120,255,90,.2);border-radius:14px;color:#91ff7d;background:rgba(120,255,90,.08);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;white-space:nowrap}
+.axis{padding:14px 22px 0}
+.axisbar{height:4px;border-radius:999px;background:linear-gradient(90deg,#7ea7ff,#61fff5,#ff6ca8)}
+.axislbl{display:flex;justify-content:space-between;color:#62708c;font-size:11px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;padding:18px 22px 22px}
+.card{display:block;background:linear-gradient(180deg,rgba(15,22,38,.88),rgba(12,18,31,.92));border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:transform .14s ease,border-color .14s ease, box-shadow .14s ease}
+.card:hover{transform:translateY(-2px);border-color:#3f4f76;box-shadow:0 14px 28px rgba(0,0,0,.3)}
+.thumb{position:relative;aspect-ratio:4/3;background:#000;overflow:hidden}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.thumb .gfp{mix-blend-mode:screen;opacity:1;filter:brightness(1.05) contrast(1.05)}
+.thumb .tdt{mix-blend-mode:screen;opacity:.78;filter:brightness(1.02) contrast(1.02)}
+.lbl{position:absolute;left:12px;top:12px;padding:5px 10px;border-radius:999px;background:rgba(5,8,14,.72);border:1px solid rgba(255,255,255,.08);font-weight:700;letter-spacing:.02em}
+.foot{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 13px;background:rgba(13,20,34,.92)}
+.sid{font-size:18px;font-weight:700;letter-spacing:.01em}
+.num{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px}
+.dots{display:flex;gap:5px;margin-top:4px}
+.dot{width:8px;height:8px;border-radius:50%}
+.dot.g{background:var(--gfp)} .dot.r{background:var(--tdt)} .dot.m{background:var(--merge)}
+@media (max-width: 980px){
   .app{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .main{padding:14px}
-  .layout{grid-template-columns:1fr}
-  .viewerwrap,.side-wrap{height:55vh}
+  .sidebar{position:relative;height:auto}
+  .main{padding:18px}
+  .hero h1{font-size:34px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));padding:16px}
 }
 </style>
 </head>
 <body>
+<script>
+const SECTIONS = [
+  'TC-1_01','TC-1_02','TC-1_03','TC-1_04','TC-1_05','TC-1_06','TC-1_07','TC-1_08','TC-1_09','TC-1_10',
+  'TC-2_02','TC-2_03','TC-2_04','TC-2_05','TC-2_06','TC-2_07','TC-2_08','TC-2_09',
+  'TC-3_02','TC-3_03','TC-3_04','TC-3_05','TC-3_06','TC-3_07','TC-3_08','TC-3_09',
+  'TC-4_02','TC-4_03','TC-4_04','TC-4_05','TC-4_06','TC-4_07','TC-4_08','TC-4_09',
+  'TC-5_02','TC-5_03','TC-5_09','TC-5_10'
+];
+const gfpThumb = s => `Images/thumbs/${s}.jpg`;
+const redThumb = s => `Images_tdTomato/Thumbs/${s}.jpg`;
+</script>
 <div class="app">
   <aside class="sidebar">
-    <div class="logo">
-      <div class="brand">
-        <a href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/">
-          <span class="pulse"></span>
-          <span class="atlas-name">5-HT2A NeuroAtlas</span>
-        </a>
-      </div>
-      <div class="subline">Htr2a-EGFP-CT-IRES-CreERT2</div>
-      <div class="monoline">Dual channel · GFP + tdTomato · 38 sections</div>
+    <div class="brand">● 5-HT2A NeuroAtlas</div>
+    <div class="sub">Htr2a-EGFP-CT-IRES-CreERT2</div>
+    <div class="mono">Dual channel · GFP + tdTomato · 38 coronal sections</div>
+    <div class="sec">Atlas</div>
+    <div class="nav">
+      <a class="active" href="index.html">🧠 Whole Brain Map</a>
+      <a href="viewer.html?section=TC-1_01">🔎 Open Viewer</a>
+      <a href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/">🏠 Atlas Home</a>
     </div>
-
-    <div class="ssec">Navigation</div>
-    <div class="sitem" id="nav-viewer">🧠 Viewer</div>
-    <div class="sitem on" id="nav-grid">🔬 Section Grid</div>
-
-    <div class="ssec">Mouse Line</div>
-    <div class="sitem-info">Line <span>Htr2a-EGFP-CreERT2</span></div>
-    <div class="sitem-info">Sample <span>2ACxAi9 TAMII-1</span></div>
-    <div class="sitem-info">Ch1 <span style="color:var(--gfp)">GFP · EGFP-CT</span></div>
-    <div class="sitem-info">Ch2 <span style="color:var(--red)">tdTomato · Red</span></div>
-    <div class="sitem-info">Sections <span>38 coronal</span></div>
-
-    <div class="ssec">Other Lines</div>
-    <div class="sitem" onclick="window.location='https://yitingchiu-a.github.io/Htr2a-A242S-EGFP-CT/'">🟢 Htr2a-A242S-EGFP-CT</div>
-    <div class="sitem" onclick="window.location='https://yitingchiu-a.github.io/Htr2a-IRES-Cre/'">⚪ Htr2a-IRES-Cre</div>
-
-    <div class="spacer"></div>
-    <div class="ssec">File paths</div>
-    <div class="sitem-info">GFP tiles <span style="color:var(--gfp)">Tiles/</span></div>
-    <div class="sitem-info">Red tiles <span style="color:var(--red)">Images_tdTomato/Tiles/</span></div>
-    <a class="back-link" href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/">← Atlas Home</a>
+    <div class="sec">Channels</div>
+    <div class="mono" style="margin-top:12px">● GFP · 5-HT2A-EGFP-CT<br><br>● tdTomato · Cre reporter<br><br>Overview thumbnails are merged by default.</div>
   </aside>
-
   <main class="main">
-    <div class="topbar">
-      <div>
-        <div class="title">Htr2a · <em>EGFP-CT-IRES-CreERT2</em></div>
-        <div class="subtitle">2ACxAi9 TAMII-1 · 38 coronal sections · Dual channel GFP + tdTomato · Olympus VS120</div>
-      </div>
-      <a href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/" title="Back to Atlas Home"
-        style="margin-left:auto;display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);background:var(--surf);border:1px solid var(--bdr2);border-radius:8px;padding:7px 12px;white-space:nowrap"
-        onmouseover="this.style.borderColor='var(--gfp)';this.style.color='var(--gfp)'"
-        onmouseout="this.style.borderColor='var(--bdr2)';this.style.color='var(--txt3)'">
-        🏠 Atlas Home
-      </a>
+    <div class="hero">
+      <h1>Htr2a · <span class="g">GFP</span> + <span class="r">tdTomato</span></h1>
+      <div class="meta">2ACxAi9 TAMII-1 · 38 coronal sections · merged overview · click any section to open full viewer</div>
     </div>
 
-    <div class="stats">
-      <div class="stat"><div class="n" style="color:var(--gfp)">38</div><div class="l">Sections</div></div>
-      <div class="stat"><div class="n" style="color:var(--gfp)">GFP</div><div class="l">Ch 1</div></div>
-      <div class="stat"><div class="n" style="color:var(--red)">tdTom</div><div class="l">Ch 2</div></div>
-      <div class="stat"><div class="n" id="modeStat" style="color:var(--gfp)">GFP</div><div class="l">Viewer mode</div></div>
-    </div>
-
-    <section id="viewerPanel" class="hide">
-      <div class="layout">
-        <div class="card">
-          <div class="cardhdr">
-            <div>
-              <div class="cardtitle" id="sectionTitle">Section 1 / 38 · TC-1_01</div>
-              <div class="cardsub">Mouse wheel zoom · drag pan · arrows switch sections · Allen-style rail + Shift+wheel browse</div>
-            </div>
-            <div class="badge" id="modeBadge">Loading…</div>
-          </div>
-
-          <div class="viewerwrap" id="single-wrap">
-            <div id="merge-stack">
-              <div id="viewer-main-wrap"><div id="viewer-main"></div></div>
-              <div id="viewer-overlay-wrap" class="hide"><div id="viewer-overlay"></div></div>
-            </div>
-
-            <div class="overlay">
-              <div class="chip" id="channelChip">Merge · GFP + tdTomato</div>
-              <div class="chip muted" id="shareChip">TC-1_01</div>
-              <div class="chip muted" id="coordChip">x: -- y: -- zoom: --</div>
-            </div>
-            <div class="overlay-right">
-              <button class="btn" id="prevBtn">◀ Prev</button>
-              <button class="btn" id="nextBtn">Next ▶</button>
-              <button class="btn" id="copyBtn">Copy link</button>
-              <button class="btn warn" id="fitBtn">Fit view</button>
-            </div>
-            <div class="overlay-bottom-left">
-              <div class="chip muted" id="mouseXY">x: -- y: --</div>
-              <div class="chip muted" id="zoomChip">zoom: --</div>
-            </div>
-            <div class="section-rail" id="sectionRail">
-              <div class="rail-title">Sections</div>
-            </div>
-          </div>
-
-          <div class="side-wrap" id="side-wrap">
-            <div class="side-panel">
-              <div class="side-label" style="color:var(--gfp)">🟢 GFP</div>
-              <div id="viewer-gfp-side"></div>
-            </div>
-            <div class="side-panel">
-              <div class="side-label" style="color:var(--red)">🔴 tdTomato</div>
-              <div id="viewer-red-side"></div>
-            </div>
-          </div>
+    <section class="topcard">
+      <div class="head">
+        <div>
+          <h2>Whole Brain Coronal Series — merged overview</h2>
+          <div class="hint">Single merged thumbnail per section · clean overview grid · full viewer opens on click</div>
         </div>
-
-        <div class="card">
-          <div class="cardhdr">
-            <div>
-              <div class="cardtitle">Section Metadata</div>
-              <div class="cardsub">Dual channel · DZI preferred · JPG fallback</div>
-            </div>
-          </div>
-          <div class="panel">
-            <div class="kv">
-              <div class="k">Section ID</div><div class="v" id="metaSection">TC-1_01</div>
-              <div class="k">Index</div><div class="v" id="metaIndex">1 / 38</div>
-              <div class="k">Mouse line</div><div class="v">Htr2a-EGFP-CT-IRES-CreERT2</div>
-              <div class="k">Sample</div><div class="v">2ACxAi9 TAMII-1</div>
-              <div class="k">Ch1</div><div class="v" style="color:var(--gfp)">GFP · EGFP-CT</div>
-              <div class="k">Ch2</div><div class="v" style="color:var(--red)">tdTomato</div>
-              <div class="k">Mode</div><div class="v" id="metaMode">Merge overlay</div>
-            </div>
-
-            <div class="controls-section">
-              <div class="ctrl-label">Display Controls</div>
-
-              <div class="ctrl-section-label gfp">── GFP channel</div>
-              <div class="ctrl-row">
-                <label>Brightness</label>
-                <input type="range" id="gfpBright" min="0" max="300" value="100">
-                <span class="val" id="gfpBrightVal">100%</span>
-              </div>
-              <div class="ctrl-row">
-                <label>Contrast</label>
-                <input type="range" id="gfpContrast" min="0" max="300" value="100">
-                <span class="val" id="gfpContrastVal">100%</span>
-              </div>
-
-              <div class="ctrl-section-label red">── tdTomato channel</div>
-              <div class="ctrl-row">
-                <label>Brightness</label>
-                <input type="range" class="red-slider" id="redBright" min="0" max="300" value="100">
-                <span class="val" style="color:var(--red)" id="redBrightVal">100%</span>
-              </div>
-              <div class="ctrl-row">
-                <label>Contrast</label>
-                <input type="range" class="red-slider" id="redContrast" min="0" max="300" value="100">
-                <span class="val" style="color:var(--red)" id="redContrastVal">100%</span>
-              </div>
-
-              <div class="ctrl-section-label">── Merge opacity</div>
-              <div class="ctrl-row">
-                <label>GFP opacity</label>
-                <input type="range" id="gfpOpacity" min="0" max="100" value="100">
-                <span class="val" id="gfpOpacityVal">100%</span>
-              </div>
-              <div class="ctrl-row">
-                <label>tdTom opacity</label>
-                <input type="range" class="red-slider" id="redOpacity" min="0" max="100" value="70">
-                <span class="val" style="color:var(--red)" id="redOpacityVal">70%</span>
-              </div>
-
-              <button class="reset-btn" id="resetDisplay">Reset all</button>
-            </div>
-
-            <div class="note">
-              Overview thumbnails are <b>merged by default</b>. The full viewer opens in <b>Merge</b> and can switch to <b>GFP</b> or <b>tdTomato</b> using the buttons below. Double-click inside the image for smooth Allen-style zoom, drag to pan, and use the section rail for fast browsing.
-            </div>
-          </div>
-        </div>
+        <div class="badge">38 sections · Merge default</div>
       </div>
-
-      <div class="channel-bar">
-        <button class="ch-btn" id="btn-gfp" onclick="setChannel('gfp')">
-          <span class="ch-dot" style="background:var(--gfp)"></span> GFP only
-        </button>
-        <button class="ch-btn" id="btn-red" onclick="setChannel('red')">
-          <span class="ch-dot" style="background:var(--red)"></span> tdTomato only
-        </button>
-        <button class="ch-btn active-merge" id="btn-merge" onclick="setChannel('merge')">
-          <span class="ch-dot" style="background:linear-gradient(135deg,var(--gfp),var(--red))"></span> Merge
-        </button>
+      <div class="axis">
+        <div class="axisbar"></div>
+        <div class="axislbl"><span>Rostral</span><span>Caudal</span></div>
       </div>
-
-      <div class="card stripcard">
-        <div class="striphdr">All 38 sections — merged strip · click to navigate · wheel / Shift+scroll to browse</div>
-        <div class="strip" id="strip"></div>
-      </div>
-    </section>
-
-    <section id="gridPanel">
-      <div class="card">
-        <div class="cardhdr">
-          <div>
-            <div class="cardtitle">Whole Brain Coronal Series · Htr2a-EGFP-CT-IRES-CreERT2</div>
-            <div class="cardsub">38 sections · merged overview preview · double-click any tile to open</div>
-          </div>
-          <div class="badge">Merged overview</div>
-        </div>
-        <div class="grid" id="grid"></div>
-      </div>
+      <div class="grid" id="grid"></div>
     </section>
   </main>
 </div>
-<div class="toast" id="toast"></div>
-
 <script>
-const SECTIONS = [
-  'TC-1_01','TC-1_02','TC-1_03','TC-1_04','TC-1_05',
-  'TC-1_06','TC-1_07','TC-1_08','TC-1_09','TC-1_10',
-  'TC-2_02','TC-2_03','TC-2_04','TC-2_05','TC-2_06',
-  'TC-2_07','TC-2_08','TC-2_09',
-  'TC-3_02','TC-3_03','TC-3_04','TC-3_05','TC-3_06',
-  'TC-3_07','TC-3_08','TC-3_09',
-  'TC-4_02','TC-4_03','TC-4_04','TC-4_05','TC-4_06',
-  'TC-4_07','TC-4_08','TC-4_09',
-  'TC-5_02','TC-5_03','TC-5_09','TC-5_10'
-];
-
-const thumbPath = k => `Images/thumbs/${k}.jpg`;
-const redThumbPath = k => `Images_tdTomato/Thumbs/${k}.jpg`;
-const gfpFull = k => `Images/full/${k}.jpg`;
-const redFull = k => `Images_tdTomato/full/${k}.jpg`;
-const gfpTile = k => `Tiles/${k}.dzi`;
-const redTile = k => `Images_tdTomato/Tiles/${k}.dzi`;
-
-let idx = 0;
-let channelMode = 'merge';
-let viewerMain = null;
-let viewerOverlay = null;
-let viewerGfpSide = null;
-let viewerRedSide = null;
-let viewerInitialized = false;
-let lastWheelSwitch = 0;
-let syncingOverlay = false;
-let syncingSide = false;
-
-const commonOpts = {
-  prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/',
-  showNavigator: true,
-  showNavigationControl: false,
-  navigatorPosition: 'BOTTOM_RIGHT',
-  visibilityRatio: 1,
-  constrainDuringPan: true,
-  zoomPerScroll: 1.15,
-  maxZoomPixelRatio: 6,
-  minZoomLevel: 0.7,
-  animationTime: 0.6,
-  blendTime: 0.08,
-  springStiffness: 9.5,
-  gestureSettingsTouch: { pinchToZoom:true, flickEnabled:true, clickToZoom:false, dblClickToZoom:true },
-  gestureSettingsMouse: { clickToZoom:false, dblClickToZoom:true, scrollToZoom:true }
-};
-
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.style.display = 'none', 2200);
-}
-
-async function hasTile(path){
-  try{
-    const r = await fetch(path,{method:'HEAD',cache:'no-store'});
-    return r.ok;
-  }catch(e){
-    return false;
-  }
-}
-
-async function getSource(kind, section){
-  if(kind === 'gfp'){
-    const tile = gfpTile(section);
-    return (await hasTile(tile)) ? {type:'dzi', url:tile, label:'DZI'} : {type:'image', url:gfpFull(section), label:'JPG'};
-  }
-  const tile = redTile(section);
-  return (await hasTile(tile)) ? {type:'dzi', url:tile, label:'DZI'} : {type:'image', url:redFull(section), label:'JPG'};
-}
-
-function openInViewer(viewer, source){
-  if(source.type === 'dzi'){
-    viewer.open(source.url);
-  }else{
-    viewer.open({type:'image', url:source.url, buildPyramid:false});
-  }
-}
-
-function getCanvasEl(viewer){
-  return viewer && viewer.element ? viewer.element.querySelector('.openseadragon-canvas') : null;
-}
-
-function applyFilters(){
-  const gb = document.getElementById('gfpBright').value;
-  const gc = document.getElementById('gfpContrast').value;
-  const rb = document.getElementById('redBright').value;
-  const rc = document.getElementById('redContrast').value;
-  const go = document.getElementById('gfpOpacity').value;
-  const ro = document.getElementById('redOpacity').value;
-
-  document.getElementById('gfpBrightVal').textContent = gb + '%';
-  document.getElementById('gfpContrastVal').textContent = gc + '%';
-  document.getElementById('redBrightVal').textContent = rb + '%';
-  document.getElementById('redContrastVal').textContent = rc + '%';
-  document.getElementById('gfpOpacityVal').textContent = go + '%';
-  document.getElementById('redOpacityVal').textContent = ro + '%';
-
-  const mainCanvas = getCanvasEl(viewerMain);
-  const overlayCanvas = getCanvasEl(viewerOverlay);
-  const gfpSideCanvas = getCanvasEl(viewerGfpSide);
-  const redSideCanvas = getCanvasEl(viewerRedSide);
-
-  const gfpFilter = `brightness(${gb}%) contrast(${gc}%)`;
-  const redFilter = `brightness(${rb}%) contrast(${rc}%)`;
-
-  if(mainCanvas){
-    mainCanvas.style.filter = channelMode === 'red' ? redFilter : gfpFilter;
-  }
-  if(overlayCanvas){
-    overlayCanvas.style.filter = redFilter;
-  }
-  if(gfpSideCanvas) gfpSideCanvas.style.filter = gfpFilter;
-  if(redSideCanvas) redSideCanvas.style.filter = redFilter;
-
-  document.getElementById('viewer-main-wrap').style.opacity =
-    channelMode === 'merge' ? String(Number(go)/100) : '1';
-  document.getElementById('viewer-overlay-wrap').style.opacity =
-    channelMode === 'merge' ? String(Number(ro)/100) : '1';
-}
-
-function syncOverlayFromMain(){
-  if(syncingOverlay || !viewerMain || !viewerOverlay || viewerMain.world.getItemCount() === 0 || viewerOverlay.world.getItemCount() === 0) return;
-  syncingOverlay = true;
-  viewerOverlay.viewport.zoomTo(viewerMain.viewport.getZoom(true), null, true);
-  viewerOverlay.viewport.panTo(viewerMain.viewport.getCenter(true), true);
-  syncingOverlay = false;
-}
-
-function syncSide(source, target){
-  if(syncingSide || !source || !target || source.world.getItemCount() === 0 || target.world.getItemCount() === 0) return;
-  syncingSide = true;
-  target.viewport.zoomTo(source.viewport.getZoom(true), null, true);
-  target.viewport.panTo(source.viewport.getCenter(true), true);
-  syncingSide = false;
-}
-
-function updateMouseInfo(event){
-  if(!viewerMain || !viewerMain.viewport || viewerMain.world.getItemCount() === 0) return;
-  const zoom = viewerMain.viewport.getZoom(true);
-  document.getElementById('zoomChip').textContent = `zoom: ${zoom.toFixed(2)}x`;
-
-  if(event && event.position){
-    const vp = viewerMain.viewport.pointFromPixel(event.position);
-    if(Number.isFinite(vp.x) && Number.isFinite(vp.y)){
-      document.getElementById('coordChip').textContent = `x: ${vp.x.toFixed(3)} y: ${vp.y.toFixed(3)} zoom: ${zoom.toFixed(2)}x`;
-      const img = viewerMain.viewport.viewportToImageCoordinates(vp);
-      if(Number.isFinite(img.x) && Number.isFinite(img.y)){
-        document.getElementById('mouseXY').textContent = `x: ${Math.round(img.x)}  y: ${Math.round(img.y)}`;
-      }
-    }
-  }
-}
-
-function handleShiftWheel(deltaY){
-  const now = Date.now();
-  if(now - lastWheelSwitch < 180) return;
-  lastWheelSwitch = now;
-  openSection(idx + (deltaY > 0 ? 1 : -1));
-}
-
-function attachMainHandlers(){
-  viewerMain.addHandler('mouse-move', updateMouseInfo);
-  viewerMain.addHandler('canvas-move', updateMouseInfo);
-  viewerMain.addHandler('animation', () => {
-    updateMouseInfo();
-    if(channelMode === 'merge') syncOverlayFromMain();
-  });
-  viewerMain.addHandler('zoom', () => { if(channelMode === 'merge') syncOverlayFromMain(); });
-  viewerMain.addHandler('pan', () => { if(channelMode === 'merge') syncOverlayFromMain(); });
-  viewerMain.addHandler('resize', () => { if(channelMode === 'merge') syncOverlayFromMain(); });
-  viewerMain.addHandler('open', () => {
-    applyFilters();
-    updateMouseInfo();
-    if(channelMode === 'merge') setTimeout(syncOverlayFromMain, 50);
-  });
-  viewerMain.addHandler('canvas-exit', () => {
-    document.getElementById('mouseXY').textContent = 'x: --  y: --';
-  });
-  viewerMain.addHandler('canvas-scroll', function(e){
-    if(e.originalEvent && e.originalEvent.shiftKey){
-      e.preventDefaultAction = true;
-      handleShiftWheel(e.scroll > 0 ? -1 : 1);
-    }
-  });
-}
-
-function initViewers(){
-  viewerMain = OpenSeadragon({ id:'viewer-main', ...commonOpts });
-  viewerOverlay = OpenSeadragon({ id:'viewer-overlay', ...commonOpts, showNavigator:false, showNavigationControl:false });
-  viewerGfpSide = OpenSeadragon({ id:'viewer-gfp-side', ...commonOpts });
-  viewerRedSide = OpenSeadragon({ id:'viewer-red-side', ...commonOpts });
-
-  attachMainHandlers();
-
-  viewerOverlay.addHandler('open', () => {
-    applyFilters();
-    setTimeout(syncOverlayFromMain, 50);
-  });
-  viewerGfpSide.addHandler('open', applyFilters);
-  viewerRedSide.addHandler('open', applyFilters);
-  viewerGfpSide.addHandler('zoom', () => syncSide(viewerGfpSide, viewerRedSide));
-  viewerGfpSide.addHandler('pan', () => syncSide(viewerGfpSide, viewerRedSide));
-  viewerRedSide.addHandler('zoom', () => syncSide(viewerRedSide, viewerGfpSide));
-  viewerRedSide.addHandler('pan', () => syncSide(viewerRedSide, viewerGfpSide));
-
-  document.getElementById('single-wrap').addEventListener('wheel', function(e){
-    if(!e.shiftKey) return;
-    e.preventDefault();
-    handleShiftWheel(e.deltaY);
-  }, {passive:false});
-
-  document.getElementById('side-wrap').addEventListener('wheel', function(e){
-    if(!e.shiftKey) return;
-    e.preventDefault();
-    handleShiftWheel(e.deltaY);
-  }, {passive:false});
-
-  viewerInitialized = true;
-}
-
-function setButtons(mode){
-  ['gfp','red','merge','side'].forEach(name => {
-    document.getElementById('btn-' + name).className = 'ch-btn' + (name === mode ? ` active-${name}` : '');
-  });
-}
-
-function setModeLabels(mode){
-  const map = {
-    gfp: ['GFP only', 'GFP', 'GFP · EGFP-CT', 'var(--gfp)', 'chip'],
-    red: ['tdTomato only', 'Red', 'tdTomato only', 'var(--red)', 'chip red'],
-    merge: ['Merge overlay', 'Merge', 'GFP + tdTomato merge', 'var(--merge)', 'chip merge'],
-    side: ['Side by side', 'Side', 'Synchronized side by side', 'var(--side)', 'chip side']
-  };
-  const [meta, stat, chipText, statColor, chipClass] = map[mode];
-  document.getElementById('metaMode').textContent = meta;
-  document.getElementById('modeStat').textContent = stat;
-  document.getElementById('modeStat').style.color = statColor;
-  const chip = document.getElementById('channelChip');
-  chip.className = chipClass;
-  chip.textContent = chipText;
-}
-
-async function loadMode(section){
-  const gSrc = await getSource('gfp', section);
-  const rSrc = await getSource('red', section);
-  const modeText = channelMode === 'gfp' ? `GFP ${gSrc.label}` :
-                   channelMode === 'red' ? `tdTomato ${rSrc.label}` :
-                   channelMode === 'merge' ? `Merge ${gSrc.label}/${rSrc.label}` :
-                   `Side ${gSrc.label}/${rSrc.label}`;
-
-  document.getElementById('modeBadge').textContent = modeText;
-
-  if(channelMode === 'side'){
-    document.getElementById('single-wrap').style.display = 'none';
-    document.getElementById('side-wrap').classList.add('active');
-    openInViewer(viewerGfpSide, gSrc);
-    openInViewer(viewerRedSide, rSrc);
-    return;
-  }
-
-  document.getElementById('single-wrap').style.display = 'block';
-  document.getElementById('side-wrap').classList.remove('active');
-
-  if(channelMode === 'gfp'){
-    document.getElementById('viewer-overlay-wrap').classList.add('hide');
-    openInViewer(viewerMain, gSrc);
-    return;
-  }
-  if(channelMode === 'red'){
-    document.getElementById('viewer-overlay-wrap').classList.add('hide');
-    openInViewer(viewerMain, rSrc);
-    return;
-  }
-
-  document.getElementById('viewer-overlay-wrap').classList.remove('hide');
-  openInViewer(viewerMain, gSrc);
-  openInViewer(viewerOverlay, rSrc);
-  setTimeout(syncOverlayFromMain, 100);
-}
-
-async function openSection(i, updateUrl=true){
-  idx = Math.max(0, Math.min(SECTIONS.length - 1, i));
-  const section = SECTIONS[idx];
-
-  document.getElementById('sectionTitle').textContent = `Section ${idx+1} / ${SECTIONS.length} · ${section}`;
-  document.getElementById('metaSection').textContent = section;
-  document.getElementById('metaIndex').textContent = `${idx+1} / ${SECTIONS.length}`;
-  document.getElementById('shareChip').textContent = section;
-
-  if(viewerInitialized){
-    await loadMode(section);
-    setTimeout(applyFilters, 120);
-  }
-
-  document.querySelectorAll('.thumb').forEach((el, j) => el.classList.toggle('on', j === idx));
-  const activeThumb = document.querySelectorAll('.thumb')[idx];
-  if(activeThumb) activeThumb.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
-  updateSectionRail();
-
-  if(updateUrl){
-    const url = new URL(window.location.href);
-    url.searchParams.set('section', section);
-    history.replaceState({}, '', url);
-  }
-}
-
-async function setChannel(mode){
-  channelMode = mode;
-  setButtons(mode);
-  setModeLabels(mode);
-  if(viewerInitialized) await loadMode(SECTIONS[idx]);
-  setTimeout(applyFilters, 120);
-}
-
-
-function buildSectionRail(){
-  const rail = document.getElementById('sectionRail');
-  rail.innerHTML = '<div class="rail-title">Sections</div>';
-  strip.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    handleShiftWheel(e.deltaY);
-  }, {passive:false});
-  SECTIONS.forEach((s, i) => {
-    const item = document.createElement('div');
-    item.className = 'rail-item' + (i === idx ? ' on' : '');
-    item.dataset.index = i;
-    item.innerHTML = `<span>${String(i+1).padStart(2,'0')}</span><small>${s.replace('TC-','')}</small>`;
-    item.onclick = () => openSection(i);
-    rail.appendChild(item);
-  });
-  rail.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    handleShiftWheel(e.deltaY);
-  }, {passive:false});
-}
-
-function updateSectionRail(){
-  document.querySelectorAll('.rail-item').forEach((el, j) => el.classList.toggle('on', j === idx));
-  const active = document.querySelectorAll('.rail-item')[idx];
-  if(active) active.scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
-function buildStrip(){
-  const strip = document.getElementById('strip');
-  strip.innerHTML = '';
-  SECTIONS.forEach((s, i) => {
-    const box = document.createElement('div');
-    box.className = 'thumb' + (i === idx ? ' on' : '');
-    box.onclick = () => openSection(i);
-
-    const stack = document.createElement('div');
-    stack.className = 'thumbstack';
-
-    const imgGfp = document.createElement('img');
-    imgGfp.loading = 'lazy';
-    imgGfp.src = thumbPath(s);
-    imgGfp.onerror = () => { imgGfp.src = gfpFull(s); };
-
-    const imgRed = document.createElement('img');
-    imgRed.loading = 'lazy';
-    imgRed.className = 'red';
-    imgRed.src = redThumbPath(s);
-    imgRed.onerror = () => { imgRed.src = redFull(s); };
-
-    stack.appendChild(imgGfp);
-    stack.appendChild(imgRed);
-
-    const lbl = document.createElement('label');
-    lbl.textContent = `${s} · #${i+1}`;
-    box.appendChild(stack);
-    box.appendChild(lbl);
-    strip.appendChild(box);
-  });
-}
-
-function buildGrid(){
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  SECTIONS.forEach((s, i) => {
-    const card = document.createElement('div');
-    card.className = 'gcard';
-    card.onclick = () => {};
-    card.ondblclick = () => { showViewer(); openSection(i); };
-
-    const stack = document.createElement('div');
-    stack.className = 'gstack';
-
-    const imgGfp = document.createElement('img');
-    imgGfp.loading = 'lazy';
-    imgGfp.src = thumbPath(s);
-    imgGfp.onerror = () => { imgGfp.src = gfpFull(s); };
-
-    const imgRed = document.createElement('img');
-    imgRed.loading = 'lazy';
-    imgRed.className = 'red';
-    imgRed.src = redThumbPath(s);
-    imgRed.onerror = () => { imgRed.src = redFull(s); };
-
-    stack.appendChild(imgGfp);
-    stack.appendChild(imgRed);
-
-    const foot = document.createElement('div');
-    foot.className = 'gfoot';
-    foot.innerHTML = `<span class="id">${s}</span><span class="n">#${i+1}</span>`;
-
-    card.appendChild(stack);
-    card.appendChild(foot);
-    grid.appendChild(card);
-  });
-}
-
-function showGrid(){
-  document.getElementById('gridPanel').classList.remove('hide');
-  document.getElementById('viewerPanel').classList.add('hide');
-  document.getElementById('nav-grid').classList.add('on');
-  document.getElementById('nav-viewer').classList.remove('on');
-}
-
-function showViewer(){
-  if(!viewerInitialized){
-    initViewers();
-    setModeLabels(channelMode);
-  }
-  document.getElementById('viewerPanel').classList.remove('hide');
-  document.getElementById('gridPanel').classList.add('hide');
-  document.getElementById('nav-viewer').classList.add('on');
-  document.getElementById('nav-grid').classList.remove('on');
-  openSection(idx, false);
-}
-
-function copyLink(){
-  const url = new URL(window.location.href);
-  url.searchParams.set('section', SECTIONS[idx]);
-  navigator.clipboard.writeText(url.toString());
-  showToast('Link copied');
-}
-
-function initialIndexFromURL(){
-  const p = new URLSearchParams(window.location.search).get('section');
-  const i = SECTIONS.indexOf(p);
-  return i >= 0 ? i : 0;
-}
-
-['gfpBright','gfpContrast','redBright','redContrast','gfpOpacity','redOpacity'].forEach(id => {
-  document.getElementById(id).addEventListener('input', applyFilters);
-});
-
-document.getElementById('resetDisplay').addEventListener('click', () => {
-  ['gfpBright','gfpContrast','redBright','redContrast'].forEach(id => document.getElementById(id).value = 100);
-  document.getElementById('gfpOpacity').value = 100;
-  document.getElementById('redOpacity').value = 70;
-  applyFilters();
-});
-
-document.getElementById('prevBtn').onclick = () => openSection(idx - 1);
-document.getElementById('nextBtn').onclick = () => openSection(idx + 1);
-document.getElementById('copyBtn').onclick = copyLink;
-document.getElementById('fitBtn').onclick = () => {
-  if(channelMode === 'side'){
-    if(viewerGfpSide) viewerGfpSide.viewport.goHome();
-    if(viewerRedSide) viewerRedSide.viewport.goHome();
-  }else{
-    if(viewerMain) viewerMain.viewport.goHome();
-    if(viewerOverlay && channelMode === 'merge') viewerOverlay.viewport.goHome();
-  }
-};
-
-document.getElementById('nav-viewer').onclick = showViewer;
-document.getElementById('nav-grid').onclick = showGrid;
-
-document.addEventListener('keydown', (e) => {
-  if(document.getElementById('viewerPanel').classList.contains('hide')) return;
-  if(e.key === 'ArrowRight') openSection(idx + 1);
-  if(e.key === 'ArrowLeft') openSection(idx - 1);
-  if(e.key.toLowerCase() === 'g') showGrid();
-  if(e.key.toLowerCase() === 'v') showViewer();
-});
-
-window.addEventListener('load', async () => {
-  buildStrip();
-  buildGrid();
-  buildSectionRail();
-  applyFilters();
-  idx = initialIndexFromURL();
-  const hasSection = new URLSearchParams(window.location.search).get('section');
-  if(hasSection){
-    showViewer();
-    await openSection(idx, false);
-  }else{
-    showGrid();
-  }
+const grid = document.getElementById('grid');
+SECTIONS.forEach((s,i)=>{
+  const a = document.createElement('a');
+  a.className='card';
+  a.href = `viewer.html?section=${encodeURIComponent(s)}`;
+  a.innerHTML = `
+    <div class="thumb">
+      <img class="gfp" src="${gfpThumb(s)}" alt="${s} GFP" loading="lazy">
+      <img class="tdt" src="${redThumb(s)}" alt="${s} tdTomato" loading="lazy">
+      <div class="lbl">${s}</div>
+    </div>
+    <div class="foot">
+      <div>
+        <div class="sid">${s.replace('TC-','')}</div>
+        <div class="dots"><span class="dot g"></span><span class="dot r"></span><span class="dot m"></span></div>
+      </div>
+      <div class="num">#${i+1}</div>
+    </div>`;
+  a.querySelector('.gfp').addEventListener('error', e=>{e.target.style.display='none';});
+  a.querySelector('.tdt').addEventListener('error', e=>{e.target.style.display='none';});
+  grid.appendChild(a);
 });
 </script>
 </body>
