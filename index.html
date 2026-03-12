@@ -2,58 +2,51 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>5-HT2A NeuroAtlas — Htr2a-EGFP-CT-IRES-CreERT2</title>
 <style>
 :root{
-  --bg:#06080d; --panel:#0b1020; --panel2:#10182b; --line:#1f2a44;
-  --text:#e9eefc; --muted:#7e8aa8; --gfp:#78ff5a; --tdt:#ff5a7c; --merge:#ffe55a;
+  --bg:#05070c; --panel:#0c1018; --panel2:#121823; --line:#212a3b;
+  --text:#e7edf8; --muted:#8a95af; --gfp:#66df38; --red:#f35e7a;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:linear-gradient(180deg,#05070c,#081019);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+html,body{margin:0;padding:0;background:radial-gradient(circle at top,#111826,#05070c 55%);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
 a{color:inherit;text-decoration:none}
-.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
-.sidebar{background:rgba(8,12,20,.96);border-right:1px solid var(--line);padding:28px 22px;position:sticky;top:0;height:100vh}
-.brand{font-size:18px;font-weight:800;letter-spacing:.02em;color:var(--gfp);margin-bottom:8px}
-.sub{font-size:14px;color:var(--gfp);line-height:1.35;margin-bottom:8px}
-.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px;line-height:1.45}
-.sec{margin-top:34px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#59657f}
-.nav{margin-top:14px;display:grid;gap:10px}
-.nav a{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:rgba(22,36,62,.28);color:#b8c5e4}
-.nav a.active{background:linear-gradient(90deg,rgba(72,140,84,.35),rgba(22,36,62,.28));color:var(--gfp)}
-.main{padding:28px 30px 34px}
-.hero h1{margin:0;font-size:42px;line-height:1.05;letter-spacing:-.03em}
-.hero h1 .g{color:var(--gfp)}
-.hero h1 .r{color:var(--tdt)}
-.hero .meta{margin-top:10px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:13px}
-.topcard{margin-top:22px;background:rgba(9,14,25,.72);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25)}
-.head{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;padding:18px 22px;border-bottom:1px solid var(--line)}
-.head h2{margin:0;font-size:20px}
-.head .hint{margin-top:6px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px}
-.badge{padding:10px 14px;border:1px solid rgba(120,255,90,.2);border-radius:14px;color:#91ff7d;background:rgba(120,255,90,.08);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;white-space:nowrap}
-.axis{padding:14px 22px 0}
-.axisbar{height:4px;border-radius:999px;background:linear-gradient(90deg,#7ea7ff,#61fff5,#ff6ca8)}
-.axislbl{display:flex;justify-content:space-between;color:#62708c;font-size:11px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;margin-top:6px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;padding:18px 22px 22px}
-.card{display:block;background:linear-gradient(180deg,rgba(15,22,38,.88),rgba(12,18,31,.92));border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:transform .14s ease,border-color .14s ease, box-shadow .14s ease}
-.card:hover{transform:translateY(-2px);border-color:#3f4f76;box-shadow:0 14px 28px rgba(0,0,0,.3)}
-.thumb{position:relative;aspect-ratio:4/3;background:#000;overflow:hidden}
+.page{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:rgba(10,14,22,.94);border-right:1px solid var(--line);padding:22px 18px;position:sticky;top:0;height:100vh}
+.logo{font-size:15px;font-weight:800;letter-spacing:.02em;color:var(--gfp)}
+.sub{margin-top:6px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;color:var(--muted);line-height:1.6}
+.block{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.label{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#6f7b96;margin-bottom:10px}
+.item{padding:8px 10px;border-radius:12px;background:rgba(18,24,35,.78);border:1px solid var(--line);font-size:13px;color:#cad4eb;margin-bottom:8px}
+.main{padding:28px 28px 36px}
+.hero{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-bottom:22px}
+.h1{font-size:32px;font-weight:900;letter-spacing:-.03em}
+.h1 span{color:var(--gfp)}
+.h2{margin-top:10px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px;line-height:1.7}
+.toplink{display:inline-flex;align-items:center;height:42px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:rgba(15,21,32,.78);color:#d9e3fa;font-weight:700}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.stat{min-width:120px;padding:14px 16px;border-radius:16px;background:rgba(12,16,24,.92);border:1px solid var(--line)}
+.stat .n{font-size:24px;font-weight:900}
+.stat .l{margin-top:4px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.card{display:block;background:rgba(10,14,21,.96);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.card:hover{transform:translateY(-2px);border-color:#41506e;box-shadow:0 12px 30px rgba(0,0,0,.24)}
+.thumb{position:relative;aspect-ratio:4/3;background:#000}
 .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
-.thumb .gfp{mix-blend-mode:screen;opacity:1;filter:brightness(1.05) contrast(1.05)}
-.thumb .tdt{mix-blend-mode:screen;opacity:.78;filter:brightness(1.02) contrast(1.02)}
-.lbl{position:absolute;left:12px;top:12px;padding:5px 10px;border-radius:999px;background:rgba(5,8,14,.72);border:1px solid rgba(255,255,255,.08);font-weight:700;letter-spacing:.02em}
-.foot{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 13px;background:rgba(13,20,34,.92)}
-.sid{font-size:18px;font-weight:700;letter-spacing:.01em}
-.num{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:12px}
-.dots{display:flex;gap:5px;margin-top:4px}
-.dot{width:8px;height:8px;border-radius:50%}
-.dot.g{background:var(--gfp)} .dot.r{background:var(--tdt)} .dot.m{background:var(--merge)}
-@media (max-width: 980px){
-  .app{grid-template-columns:1fr}
+.thumb .g{mix-blend-mode:screen;opacity:1}
+.thumb .r{mix-blend-mode:screen;opacity:.78}
+.cardmeta{padding:12px 13px 14px}
+.name{font-size:15px;font-weight:800}
+.subname{margin-top:5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;color:var(--muted)}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tag{padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(17,24,36,.88);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px;color:#c5d0e7}
+.tag.merge{color:#ffe97e}
+@media (max-width:900px){
+  .page{grid-template-columns:1fr}
   .sidebar{position:relative;height:auto}
   .main{padding:18px}
-  .hero h1{font-size:34px}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));padding:16px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
 }
 </style>
 </head>
@@ -68,66 +61,65 @@ const SECTIONS = [
 ];
 const gfpThumb = s => `Images/thumbs/${s}.jpg`;
 const redThumb = s => `Images_tdTomato/Thumbs/${s}.jpg`;
+function build(){
+  const grid = document.getElementById('grid');
+  SECTIONS.forEach((s,i)=>{
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = `viewer.html?section=${encodeURIComponent(s)}`;
+    a.innerHTML = `
+      <div class="thumb">
+        <img class="g" src="${gfpThumb(s)}" alt="${s} GFP thumb" loading="lazy">
+        <img class="r" src="${redThumb(s)}" alt="${s} tdTomato thumb" loading="lazy">
+      </div>
+      <div class="cardmeta">
+        <div class="name">${s}</div>
+        <div class="subname">Section ${i+1} / ${SECTIONS.length}</div>
+        <div class="tagrow">
+          <span class="tag merge">Merged preview</span>
+          <span class="tag">Open viewer</span>
+        </div>
+      </div>`;
+    a.querySelector('.g').addEventListener('error',e=>e.target.style.display='none');
+    a.querySelector('.r').addEventListener('error',e=>e.target.style.display='none');
+    grid.appendChild(a);
+  });
+}
+window.addEventListener('load', build);
 </script>
-<div class="app">
+<div class="page">
   <aside class="sidebar">
-    <div class="brand">● 5-HT2A NeuroAtlas</div>
-    <div class="sub">Htr2a-EGFP-CT-IRES-CreERT2</div>
-    <div class="mono">Dual channel · GFP + tdTomato · 38 coronal sections</div>
-    <div class="sec">Atlas</div>
-    <div class="nav">
-      <a class="active" href="index.html">🧠 Whole Brain Map</a>
-      <a href="viewer.html?section=TC-1_01">🔎 Open Viewer</a>
-      <a href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/">🏠 Atlas Home</a>
+    <div class="logo">5-HT2A NeuroAtlas</div>
+    <div class="sub">Htr2a-EGFP-CT-IRES-CreERT2<br>Dual channel atlas · merged overview</div>
+    <div class="block">
+      <div class="label">Dataset</div>
+      <div class="item">2ACxAi9 TAMII-1</div>
+      <div class="item">38 coronal sections</div>
+      <div class="item">GFP + tdTomato</div>
     </div>
-    <div class="sec">Channels</div>
-    <div class="mono" style="margin-top:12px">● GFP · 5-HT2A-EGFP-CT<br><br>● tdTomato · Cre reporter<br><br>Overview thumbnails are merged by default.</div>
+    <div class="block">
+      <div class="label">Viewer</div>
+      <div class="item">Default: merged image</div>
+      <div class="item">Double-click: smooth zoom</div>
+      <div class="item">Arrow keys: browse sections</div>
+    </div>
   </aside>
   <main class="main">
     <div class="hero">
-      <h1>Htr2a · <span class="g">GFP</span> + <span class="r">tdTomato</span></h1>
-      <div class="meta">2ACxAi9 TAMII-1 · 38 coronal sections · merged overview · click any section to open full viewer</div>
+      <div>
+        <div class="h1">Htr2a <span>EGFP-CT-IRES-CreERT2</span></div>
+        <div class="h2">Merged overview thumbnails only. Click any section to open the full viewer with smooth Allen-style zoom, bottom channel switch, and filmstrip browsing.</div>
+      </div>
+      <a class="toplink" href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/">Atlas home</a>
     </div>
-
-    <section class="topcard">
-      <div class="head">
-        <div>
-          <h2>Whole Brain Coronal Series — merged overview</h2>
-          <div class="hint">Single merged thumbnail per section · clean overview grid · full viewer opens on click</div>
-        </div>
-        <div class="badge">38 sections · Merge default</div>
-      </div>
-      <div class="axis">
-        <div class="axisbar"></div>
-        <div class="axislbl"><span>Rostral</span><span>Caudal</span></div>
-      </div>
-      <div class="grid" id="grid"></div>
-    </section>
+    <div class="stats">
+      <div class="stat"><div class="n">38</div><div class="l">Sections</div></div>
+      <div class="stat"><div class="n" style="color:var(--gfp)">GFP</div><div class="l">Channel 1</div></div>
+      <div class="stat"><div class="n" style="color:var(--red)">tdTom</div><div class="l">Channel 2</div></div>
+      <div class="stat"><div class="n">Merge</div><div class="l">Default overview</div></div>
+    </div>
+    <div class="grid" id="grid"></div>
   </main>
 </div>
-<script>
-const grid = document.getElementById('grid');
-SECTIONS.forEach((s,i)=>{
-  const a = document.createElement('a');
-  a.className='card';
-  a.href = `viewer.html?section=${encodeURIComponent(s)}`;
-  a.innerHTML = `
-    <div class="thumb">
-      <img class="gfp" src="${gfpThumb(s)}" alt="${s} GFP" loading="lazy">
-      <img class="tdt" src="${redThumb(s)}" alt="${s} tdTomato" loading="lazy">
-      <div class="lbl">${s}</div>
-    </div>
-    <div class="foot">
-      <div>
-        <div class="sid">${s.replace('TC-','')}</div>
-        <div class="dots"><span class="dot g"></span><span class="dot r"></span><span class="dot m"></span></div>
-      </div>
-      <div class="num">#${i+1}</div>
-    </div>`;
-  a.querySelector('.gfp').addEventListener('error', e=>{e.target.style.display='none';});
-  a.querySelector('.tdt').addEventListener('error', e=>{e.target.style.display='none';});
-  grid.appendChild(a);
-});
-</script>
 </body>
 </html>
