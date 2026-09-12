@@ -150,6 +150,9 @@ a{color:inherit;text-decoration:none}
     <div class="sitem on" id="nav-viewer">🧠 Viewer</div>
     <div class="sitem" id="nav-grid">🔬 Section Grid</div>
 
+    <div class="ssec">Channel</div>
+    <div class="sitem on">● GFP only</div>
+    <a class="sitem" href="merged.html">○ Merged · GFP + tdTomato</a>
     <div class="ssec">Mouse line</div>
     <div class="sitem-info">Mouse line <span>Htr2a-EGFP-CT-IRES-CreERT2</span></div>
     <div class="sitem-info">Sample <span>2ACxAi9 TAMII-1</span></div>
@@ -248,7 +251,7 @@ a{color:inherit;text-decoration:none}
               Tries <b>Tiles/&lt;id&gt;.dzi</b> first for deep zoom. Falls back to
               <b>Images/full/&lt;id&gt;.jpg</b> if tiles are not available.
             </div>
-            <div class="note">This viewer shows the <b>GFP channel only</b>. The 2ACxAi9 cross also carries a tdTomato reporter, but no tdTomato image set is loaded here — every image comes from <b>Images/</b> and <b>Tiles/</b>, which hold the GFP channel alone.</div>
+            <div class="note">This page shows the <b>GFP channel only</b>, from <b>Images/</b> and <b>Tiles/</b>. The 2ACxAi9 cross also carries a tdTomato reporter; the two-channel overlay is kept on its own page — see <b>Merged · GFP + tdTomato</b> in the sidebar.</div>
           </div>
         </div>
       </div>
@@ -278,6 +281,11 @@ a{color:inherit;text-decoration:none}
 
 <script>
 const SECTIONS = ["TC-1_01", "TC-1_02", "TC-1_03", "TC-1_04", "TC-1_05", "TC-1_06", "TC-1_07", "TC-1_08", "TC-1_09", "TC-1_10", "TC-2_02", "TC-2_03", "TC-2_04", "TC-2_05", "TC-2_06", "TC-2_07", "TC-2_08", "TC-2_09", "TC-3_02", "TC-3_03", "TC-3_04", "TC-3_05", "TC-3_06", "TC-3_07", "TC-3_08", "TC-3_09", "TC-4_02", "TC-4_03", "TC-4_04", "TC-4_05", "TC-4_06", "TC-4_07", "TC-4_08", "TC-4_09", "TC-5_02", "TC-5_03", "TC-5_09", "TC-5_10"];
+
+/* Last-resort image source. Relative paths always win when this file sits
+   next to Images/ and Tiles/ (locally, and on the published site). This only
+   kicks in for a stray copy opened somewhere else — e.g. a download. */
+const REMOTE = 'https://yitingchiu-a.github.io/Htr2a-EGFP-CreERT2/';
 
 const thumbPath = k => 'Images/thumbs/' + k + '.jpg';
 const altThumb  = k => 'Images/thumbs/resized_' + k + '.jpg';
@@ -352,6 +360,7 @@ function setThumb(img, key){
     if(img.dataset.t2 !== '1'){ img.dataset.t2 = '1'; img.src = altThumb(key); }
     else if(img.dataset.t3 !== '1'){ img.dataset.t3 = '1'; img.src = fullPath(key); }
     else if(img.dataset.t4 !== '1'){ img.dataset.t4 = '1'; img.src = legacy(key); }
+    else if(img.dataset.t5 !== '1'){ img.dataset.t5 = '1'; img.src = REMOTE + thumbPath(key); }
   };
 }
 
@@ -375,11 +384,19 @@ function openWithFallback(key, tk){
     clear(); setMeta(key, mode, src); readout();
   };
 
+  const tryRemote = () => {
+    if(tk !== token) return;
+    clear();
+    const url = REMOTE + fullPath(key);
+    viewer.addOnceHandler('open', onOpen('Published JPG', url));
+    viewer.addOnceHandler('open-failed', () => { if(tk===token) setMeta(key, 'Image not found', url); });
+    viewer.open({type:'image', url:url, buildPyramid:false});
+  };
   const tryLegacy = () => {
     if(tk !== token) return;
     clear();
     viewer.addOnceHandler('open', onOpen('Legacy JPG', old));
-    viewer.addOnceHandler('open-failed', () => { if(tk===token) setMeta(key, 'Image not found', old); });
+    viewer.addOnceHandler('open-failed', tryRemote);
     viewer.open({type:'image', url:old, buildPyramid:false});
   };
   const tryJpg = () => {
@@ -394,7 +411,10 @@ function openWithFallback(key, tk){
   setMeta(key, 'Trying DZI…', dzi);
   viewer.addOnceHandler('open', onOpen('DZI tiles', dzi));
   viewer.addOnceHandler('open-failed', tryJpg);
-  viewer.open({type:'dzi', url:dzi});
+  // OpenSeadragon takes a DZI as a plain URL string. Passing {type:'dzi', url}
+  // is NOT a supported tile source - it throws "Unable to load TileSource" and
+  // silently drops to the multi-MB full JPG. This is the deep-zoom path.
+  viewer.open(dzi);
 }
 
 function openSection(i, pushUrl = true){
