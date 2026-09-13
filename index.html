@@ -165,11 +165,6 @@ a{color:inherit;text-decoration:none}
     <div class="sitem" onclick="window.location='https://yitingchiu-a.github.io/Htr2a-A242S-EGFP-CT/'">🟢 Htr2a-A242S-EGFP-CT</div>
 
     <div class="spacer"></div>
-    <div class="ssec">File paths</div>
-    <div class="sitem-info">Tiles <span style="color:var(--grn)">Tiles/&lt;id&gt;.dzi</span></div>
-    <div class="sitem-info">Full <span>Images/full/&lt;id&gt;.jpg</span></div>
-    <div class="sitem-info">Thumbs <span>Images/thumbs/&lt;id&gt;.jpg</span></div>
-    <a class="back-link" href="https://yitingchiu-a.github.io/5-HT2A-NeuroAtlas/">← Atlas Home</a>
   </aside>
 
   <main class="main">
@@ -217,25 +212,12 @@ a{color:inherit;text-decoration:none}
         <div class="card">
           <div class="cardhdr">
             <div>
-              <div class="cardtitle">Section Metadata</div>
-              <div class="cardsub">Deep zoom · DZI tiles · JPG fallback</div>
+              <div class="cardtitle">Display</div>
+              <div class="cardsub">Adjust how the section is rendered</div>
             </div>
           </div>
           <div class="panel">
-            <div class="kv">
-              <div class="k">Section ID</div><div class="v" id="metaSection">—</div>
-              <div class="k">Index</div><div class="v" id="metaIndex">—</div>
-              <div class="k">Mouse line</div><div class="v">Htr2a-EGFP-CT-IRES-CreERT2</div>
-              <div class="k">Sample</div><div class="v">2ACxAi9 TAMII-1</div>
-              <div class="k">Allele</div><div class="v">EGFP-CT-IRES-CreERT2</div>
-              <div class="k">Channel</div><div class="v">GFP only</div>
-              <div class="k">Scanner</div><div class="v">Olympus VS120</div>
-              <div class="k">JAX strain</div><div class="v">038934</div>
-              <div class="k">Source</div><div class="v" id="metaSource">—</div>
-            </div>
-
-            <div class="ctrlblock">
-              <div class="ctrltitle">Display controls</div>
+            <div class="ctrlblock" style="margin-top:0;border-top:none;padding-top:0">
               <div class="sliderrow">
                 <label><span>Brightness</span><span id="brightVal">100%</span></label>
                 <input id="brightSlider" type="range" min="40" max="200" value="100">
@@ -246,12 +228,6 @@ a{color:inherit;text-decoration:none}
               </div>
               <button class="btn wbtn" id="resetDisplayBtn">Reset display</button>
             </div>
-
-            <div class="note">
-              Tries <b>Tiles/&lt;id&gt;.dzi</b> first for deep zoom. Falls back to
-              <b>Images/full/&lt;id&gt;.jpg</b> if tiles are not available.
-            </div>
-            <div class="note">This page shows the <b>GFP channel only</b>, from <b>Images/</b> and <b>Tiles/</b>. The 2ACxAi9 cross also carries a tdTomato reporter; the two-channel overlay is kept on its own page — see <b>Merged · GFP + tdTomato</b> in the sidebar.</div>
           </div>
         </div>
       </div>
@@ -365,13 +341,14 @@ function setThumb(img, key){
 }
 
 function setMeta(key, mode, src){
-  document.getElementById('sectionTitle').textContent =
-    'Section ' + (idx+1) + ' / ' + SECTIONS.length + ' · ' + key;
-  document.getElementById('metaSection').textContent = key;
-  document.getElementById('metaIndex').textContent = (idx+1) + ' / ' + SECTIONS.length;
-  document.getElementById('shareChip').textContent = key;
-  document.getElementById('modeBadge').textContent = mode;
-  document.getElementById('metaSource').textContent = src;
+  // the metadata list was removed from the panel; write only to what exists
+  const put = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
+  put('sectionTitle', 'Section ' + (idx+1) + ' / ' + SECTIONS.length + ' · ' + key);
+  put('metaSection', key);
+  put('metaIndex', (idx+1) + ' / ' + SECTIONS.length);
+  put('shareChip', key);
+  put('modeBadge', mode);
+  put('metaSource', src);
 }
 
 function openWithFallback(key, tk){
